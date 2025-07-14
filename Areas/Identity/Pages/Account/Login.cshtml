@@ -1,0 +1,72 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+
+<div class="inner-wrapper min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-5">
+                <div class="login-box  p-4 rounded shadow">
+                    <h4 class="text-dark fw-600 text-center mb-4">Login</h4>
+                    <form id="account" method="post">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group mb-3">
+                            <label class="text-dark fs-14" asp-for="Input.Email"></label>
+                            <input class="form-control form-control-submit" asp-for="Input.Email" />
+                            <span class="text-danger" asp-validation-for="Input.Email"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="text-dark fs-14" asp-for="Input.Password"></label>
+                            <input class="form-control form-control-submit" id="password-field" asp-for="Input.Password" />
+                            <span class="text-danger" asp-validation-for="Input.Password"></span>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="custom-checkbox mb-0" asp-for="Input.RememberMe">
+                                <input type="checkbox" asp-for="Input.RememberMe" />
+                                @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="form-group mb-3">
+                            <button type="submit" class="btn btn-primary w-100">Log in</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mb-3">
+                        <p class="text-muted">or sign up with:</p>
+                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                            <div class="d-flex justify-content-center gap-2">
+                                @foreach (var provider in Model.ExternalLogins)
+                                {
+                                    <button type="submit" class="btn btn-outline-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                        <i class="fab fa-@provider.Name.ToLower()"></i>
+                                    </button>
+                                }
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="text-center">
+                        <p>
+                            <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                        </p>
+                        <p>
+                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                        </p>
+                        <p>
+                            <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

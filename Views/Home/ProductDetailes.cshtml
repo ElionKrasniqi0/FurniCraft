@@ -1,0 +1,359 @@
+﻿@model Product
+
+<div class="container-fluid bg-light py-2">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 py-1">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/Home/Product">Products</a></li>
+                <li class="breadcrumb-item"><a href="/Home/ProductCategory/@Model.CatId">@Model.Category?.CatName</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.ProName</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<section class="py-4">
+    <div class="container">
+        <div class="row g-3">
+            <!-- Product Gallery -->
+            <div class="col-lg-6">
+                <div class="bg-white p-2 rounded border">
+                    <div class="product-image-container text-center p-2">
+                        <img src="~/Product/@Model.ProImage" alt="@Model.ProName"
+                             class="img-fluid" style="max-height: 400px; width: auto;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Details -->
+            <div class="col-lg-6">
+                <div class="product-details">
+                    <h1 class="product-title mb-2 fs-4 fw-bold">@Model.ProName</h1>
+
+                    <!-- Price -->
+                    <div class="price-section mb-3">
+                        <div class="d-flex align-items-baseline">
+                            <span class="current-price fs-3 fw-bold text-dark me-2">@Model.Price.ToString("N2") €</span>
+
+
+                        </div>
+                        <span class="text-muted small">Value added tax</span>
+                    </div>
+
+                    <!-- Delivery Info -->
+                    <div class="delivery-info mb-3">
+                        <div class="d-flex align-items-center text-success small">
+                            <i class="fas fa-check-circle me-1"></i>
+                            <span>Available (Ships 1-3 business days)</span>
+                        </div>
+                    </div>
+
+                    <!-- Add to Cart -->
+                    <div class="add-to-cart mb-4">
+                        <form id="addToCartForm" method="post" action="/Carts/AddToCart">
+                            <input type="hidden" name="ProId" value="@Model.ProId">
+                            <div class="d-flex align-items-center">
+                                <div class="quantity-selector me-3">
+                                    <div class="input-group" style="width: 120px;">
+                                        <button type="button" class="btn btn-outline-secondary btn-minus px-3 py-1"
+                                                style="border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none;">
+                                            <i class="fas fa-minus" style="font-size: 0.9rem; vertical-align: middle;"></i>
+                                        </button>
+                                        <input type="number" id="quantityInput" name="qty"
+                                               class="form-control text-center px-1 py-1 border-left-0 border-right-0"
+                                               value="1" min="1" max="10"
+                                               style="border-color: #dee2e6; height: 38px; font-weight: 500;">
+                                        <button type="button" class="btn btn-outline-secondary btn-plus px-3 py-1"
+                                                style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none;">
+                                            <i class="fas fa-plus" style="font-size: 0.9rem; vertical-align: middle;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="submit" id="addToCartButton" class="btn btn-primary flex-grow-1 py-2">
+                                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Product Meta -->
+                    <div class="product-meta border-top pt-3">
+                        <div class="row small">
+                            <div class="col-md-6 mb-2">
+                                <span class="text-muted me-2">Categories:</span>
+                                <a href="/Home/ProductCategory/@Model.CatId" class="text-decoration-none">@Model.Category?.CatName</a>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <span class="text-muted me-2">Share:</span>
+                                <a href="#" class="text-muted me-2 share-facebook"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="text-muted me-2 share-twitter"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="text-muted share-whatsapp"><i class="fab fa-whatsapp"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Product Description -->
+<section class="pb-4">
+    <div class="container">
+        <div class="bg-white p-4 rounded border">
+            <h5 class="fw-bold mb-3">Product description</h5>
+            <div class="product-description">
+                @Html.Raw(Model.Descreption)
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Similar Products -->
+<section class="pb-4">
+    <div class="container">
+        <h3 class="mb-3 fw-bold fs-5">Similar Products</h3>
+        <div class="row g-2 g-md-3">
+            @for (int i = 0; i < 4; i++)
+            {
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm product-card">
+                        <a href="#" class="product-image-link similar-product-link">
+                            <img src="~/Product/@Model.ProImage" class="card-img-top" alt="Related Product" style="height: 180px; object-fit: contain;">
+                        </a>
+                        <div class="card-body p-2">
+                            <h5 class="card-title fs-6 mb-1 fw-bold">Produkt @(i + 1)</h5>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="price fw-bold text-dark">@(Model.Price + (i + 1) * 10) €</div>
+                                @if (i % 2 == 0)
+                                {
+                                    <span class="badge bg-danger ms-2 small">-15%</span>
+                                }
+                            </div>
+                            <form class="similar-product-form" method="post" action="/Carts/AddToCart">
+                                <input type="hidden" name="ProId" value="@Model.ProId" />
+                                <input type="hidden" name="qty" value="1" />
+                                <button type="submit" class="btn btn-sm btn-primary w-100 py-1 similar-product-btn">
+                                    <i class="fas fa-shopping-cart me-1"></i> Add
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<style>
+    .breadcrumb {
+        padding: 0;
+        background-color: transparent;
+        font-size: 0.9rem;
+    }
+
+    .product-image-container {
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .product-title {
+        color: #212529;
+        line-height: 1.3;
+    }
+
+    .current-price {
+        color: #212529;
+    }
+
+    .old-price {
+        font-size: 0.9rem;
+    }
+
+    .discount-badge {
+        font-size: 0.8rem;
+    }
+
+    .delivery-info i {
+        font-size: 1rem;
+        color: #28a745;
+    }
+
+    .quantity-selector .btn-outline-secondary {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        color: #495057;
+        transition: all 0.2s ease;
+    }
+
+        .quantity-selector .btn-outline-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        .quantity-selector .btn-outline-secondary:focus {
+            box-shadow: none;
+        }
+
+    .quantity-selector input::-webkit-outer-spin-button,
+    .quantity-selector input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .quantity-selector input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    .btn-primary {
+        background-color: #0066cc;
+        border-color: #0066cc;
+    }
+
+    .product-card {
+        transition: transform 0.2s ease;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .product-card .price {
+            font-size: 0.95rem;
+        }
+
+    .btn-clicked {
+        transform: scale(0.95);
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Quantity controls
+        $('.btn-minus').click(function() {
+            var input = $(this).closest('.input-group').find('input');
+            var value = parseInt(input.val());
+            if (value > 1) {
+                input.val(value - 1);
+                $(this).addClass('btn-clicked');
+                setTimeout(() => $(this).removeClass('btn-clicked'), 150);
+            }
+        });
+
+        $('.btn-plus').click(function() {
+            var input = $(this).closest('.input-group').find('input');
+            var value = parseInt(input.val());
+            if (value < 10) {
+                input.val(value + 1);
+                $(this).addClass('btn-clicked');
+                setTimeout(() => $(this).removeClass('btn-clicked'), 150);
+            }
+        });
+
+        // Add to cart for main product
+        $('#addToCartForm').submit(function(e) {
+            e.preventDefault();
+            var button = $('#addToCartButton');
+            var originalText = button.html();
+
+            button.prop('disabled', true)
+                 .html('<span class="spinner-border spinner-border-sm me-2"></span>Shtim...');
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        // Update cart count
+                        updateCartCount(response.cartItemCount);
+
+                        // Show success feedback
+                        button.html('<i class="fas fa-check me-2"></i>Added');
+                        setTimeout(function() {
+                            button.html(originalText).prop('disabled', false);
+                        }, 1500);
+                    }
+                },
+                error: function() {
+                    alert('Error adding to cart');
+                    button.html(originalText).prop('disabled', false);
+                }
+            });
+        });
+
+        // Add to cart for similar products
+        $('.similar-product-form').submit(function(e) {
+            e.preventDefault();
+            var button = $(this).find('button[type="submit"]');
+            var originalText = button.html();
+
+            button.prop('disabled', true)
+                 .html('<span class="spinner-border spinner-border-sm"></span>');
+
+            $.ajax({
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        // Update cart count
+                        updateCartCount(response.cartItemCount);
+
+                        // Show success feedback
+                        button.html('<i class="fas fa-check"></i>');
+                        setTimeout(function() {
+                            button.html(originalText).prop('disabled', false);
+                        }, 1500);
+                    }
+                },
+                error: function() {
+                    alert('Error adding to cart');
+                    button.html(originalText).prop('disabled', false);
+                }
+            });
+        });
+
+        // Share buttons functionality
+        $('.share-facebook').click(function(e) {
+            e.preventDefault();
+            var url = encodeURIComponent(window.location.href);
+            window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, 'facebook-share-dialog', 'width=626,height=436');
+        });
+
+        $('.share-twitter').click(function(e) {
+            e.preventDefault();
+            var url = encodeURIComponent(window.location.href);
+            var text = encodeURIComponent('Check out this product: @Model.ProName');
+            window.open('https://twitter.com/intent/tweet?text=' + text + '&url=' + url, 'twitter-share-dialog', 'width=626,height=436');
+        });
+
+        $('.share-whatsapp').click(function(e) {
+            e.preventDefault();
+            var url = encodeURIComponent(window.location.href);
+            var text = encodeURIComponent('Check out this product: @Model.ProName');
+            window.open('https://wa.me/?text=' + text + ' ' + url, 'whatsapp-share-dialog');
+        });
+
+        // Similar product click
+        $('.similar-product-link').click(function(e) {
+            e.preventDefault();
+            // In a real implementation, this would navigate to the product detail page
+            alert('This would navigate to the product detail page in a real implementation');
+        });
+
+        // Update cart count function
+        function updateCartCount(count) {
+            $('#cartSummary').text(count);
+            // Add animation to cart icon
+            var cartIcon = $('#cartSummary').parent();
+            cartIcon.addClass('animate__animated animate__bounceIn');
+            setTimeout(function() {
+                cartIcon.removeClass('animate__animated animate__bounceIn');
+            }, 1000);
+        }
+    });
+</script>

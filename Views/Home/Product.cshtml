@@ -1,0 +1,163 @@
+﻿@model List<Product>
+
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-6">
+                <div class="intro-excerpt">
+                    <h1>Our Products</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="untree_co-section product-section before-footer-section">
+    <div class="container">
+        <div class="row g-3">
+            @foreach (var item in Model)
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-2-4">
+                    <!-- Modified column classes -->
+                    <div class="product-card card h-100 border-0 shadow-sm">
+                        <!-- Product Image -->
+                        <a href="/Home/ProductDetailes/@item.ProId" class="product-image-link">
+                            <img src="~/Product/@item.ProImage" class="card-img-top p-3" alt="@item.ProName">
+                        </a>
+
+                        <!-- Product Body -->
+                        <div class="card-body">
+                            <h5 class="product-title">
+                                <a href="/Home/ProductDetailes/@item.ProId">@item.ProName</a>
+                            </h5>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="product-price">€@item.Price</div>
+                                <form class="add-to-cart-form" action="/Carts/AddToCart" method="post">
+                                    <input type="hidden" name="ProId" value="@item.ProId" />
+                                    <input type="hidden" name="qty" value="1" />
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-shopping-cart"></i> Add
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom column class for 5 items in a row */
+    .col-lg-2-4 {
+        position: relative;
+        width: 100%;
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+
+    @@media (min-width: 992px) {
+        .col-lg-2-4 {
+            flex: 0 0 20%;
+            max-width: 20%;
+        }
+    }
+
+    .product-card {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    .product-image-link {
+        display: block;
+        height: 180px;
+        text-align: center;
+        background: #f8f9fa;
+        overflow: hidden;
+    }
+
+        .product-image-link img {
+            max-height: 100%;
+            width: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+    .product-card:hover .product-image-link img {
+        transform: scale(1.05);
+    }
+
+    .product-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        height: 2.5rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+        .product-title a {
+            color: #333;
+            text-decoration: none;
+        }
+
+    .product-price {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #0d6efd;
+    }
+
+    .btn-primary {
+        border-radius: 4px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.9rem;
+    }
+</style>
+
+<script>
+    $(document).ready(function() {
+        // Add to cart functionality
+        $('.add-to-cart-form').on('submit', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            var button = form.find('button');
+            var originalText = button.html();
+
+            button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+            $.ajax({
+                url: form.attr('action'),
+                method: form.attr('method'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        // Update cart count
+                        var currentCount = parseInt($('#cartSummary').text()) || 0;
+                        $('#cartSummary').text(currentCount + 1);
+
+                        // Show feedback
+                        button.html('<i class="fas fa-check"></i>');
+                        setTimeout(function() {
+                            button.html(originalText);
+                            button.prop('disabled', false);
+                        }, 1000);
+                    }
+                },
+                error: function() {
+                    alert('Error adding to cart');
+                    button.html(originalText);
+                    button.prop('disabled', false);
+                }
+            });
+        });
+    });
+</script>

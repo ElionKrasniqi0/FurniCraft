@@ -1,0 +1,12 @@
+﻿@model int;
+<div style="width:80px;">
+    <a class="nav-link" asp-controller="Carts" asp-action="Index">
+        <img src="~/images/cart.svg">
+        <sup>
+            @if (Model > 0)
+            {
+                @Model
+            }
+        </sup>
+    </a>
+</div>

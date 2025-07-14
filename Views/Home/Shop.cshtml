@@ -1,0 +1,209 @@
+﻿@model ShopViewModel
+
+<!-- Hero Section with Search -->
+<div class="container-fluid bg-white py-3 border-bottom">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="mb-0 fs-3 fw-bold">Shop</h1>
+            </div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control border-end-0" placeholder="Search for products..." aria-label="Search">
+                    <button class="btn btn-outline-secondary border-start-0 bg-white" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container-fluid mt-3">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 d-none d-lg-block pe-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0 fw-bold">Filters</h5>
+                </div>
+                <div class="card-body pt-0">
+                    <!-- Price Filter -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">Price Range</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-light text-dark">€0</span>
+                            <span class="badge bg-light text-dark">€1000+</span>
+                        </div>
+                        <input type="range" class="form-range" min="0" max="1000">
+                    </div>
+
+                    <!-- Categories Filter -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">Categories</h6>
+                        <div class="list-group list-group-flush">
+                            @foreach (var cat in Model.Categories.OrderBy(c => c.CatName).Take(5))
+                            {
+                                <a href="/Home/ProductCategory/@cat.CatId" class="list-group-item list-group-item-action border-0 px-0 py-2">
+                                    @cat.CatName
+                                </a>
+                            }
+                            <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2 text-primary">
+                                View all categories
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Area -->
+        <div class="col-lg-9">
+            <!-- Categories Section -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold mb-0">Shop by Category</h2>
+                    <a href="#" class="text-decoration-none text-primary">See all</a>
+                </div>
+
+                <div class="row g-2">
+                    @foreach (var cat in Model.Categories.OrderBy(c => c.CatName).Take(6))
+                    {
+                        <div class="col-4 col-sm-3 col-md-2">
+                            <a href="/Home/ProductCategory/@cat.CatId" class="text-decoration-none">
+                                <div class="card border-0 h-100">
+                                    <div class="ratio ratio-1x1 bg-light rounded">
+                                        <img src="~/category/@cat.CatPhoto" alt="@cat.CatName" class="img-fluid p-2" style="object-fit: contain;">
+                                    </div>
+                                    <div class="card-body p-2 text-center">
+                                        <h6 class="card-title mb-0 small">@cat.CatName</h6>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 fw-bold mb-0">All Products</h2>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2 small">Sort by:</span>
+                        <select class="form-select form-select-sm border-0 shadow-sm" style="width: auto;">
+                            <option selected>Featured</option>
+                            <option>Price: Low to High</option>
+                            <option>Price: High to Low</option>
+                            <option>Newest Arrivals</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row g-2">
+                    @foreach (var item in Model.Products)
+                    {
+                        <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                            <div class="card border-0 h-100">
+                                <div class="position-relative">
+                                    <a href="/Home/ProductDetailes/@item.ProId">
+                                        <img src="~/Product/@item.ProImage" alt="@item.ProName" class="card-img-top p-2" style="height: 150px; object-fit: contain;">
+                                    </a>
+                                    <div class="position-absolute top-0 end-0 p-2">
+                                        <button class="btn btn-sm btn-light rounded-circle shadow-sm p-1">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    </div>
+                                    @if (item.Price > 0)
+                                    {
+                                        <span class="position-absolute top-0 start-0 m-1 badge bg-danger">
+                                            
+                                        </span>
+                                    }
+                                </div>
+                                <div class="card-body p-2">
+                                    <a href="/Home/ProductDetailes/@item.ProId" class="text-decoration-none text-dark">
+                                        <h6 class="card-title mb-1 small text-truncate">@item.ProName</h6>
+                                    </a>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="fw-bold text-danger">€@item.Price.ToString("N2")</span>
+                                            @if (item.Price > 0)
+                                            {
+                                                <span class="text-muted text-decoration-line-through small ms-1">€@item.Price.ToString("N2")</span>
+                                            }
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-primary rounded-circle p-1">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination -->
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link border-0" href="#" tabindex="-1">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item active"><a class="page-link border-0" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link border-0" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link border-0" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link border-0" href="#">4</a></li>
+                        <li class="page-item"><a class="page-link border-0" href="#">5</a></li>
+                        <li class="page-item">
+                            <a class="page-link border-0" href="#">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        transition: all 0.2s ease;
+        background-color: white;
+        border-radius: 8px !important;
+        overflow: hidden;
+    }
+
+        .card:hover {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+    .form-select {
+        border-radius: 4px !important;
+        font-size: 0.875rem;
+    }
+
+    .page-link {
+        border-radius: 4px !important;
+        margin: 0 2px;
+        min-width: 36px;
+        text-align: center;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .ratio-1x1 {
+        --bs-aspect-ratio: 100%;
+    }
+</style>

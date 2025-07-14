@@ -1,0 +1,60 @@
+﻿@using FurniCraft.Data
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<div class="navbar-nav align-items-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <!-- Dropdown for logged-in users -->
+        <div class="dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="~/images/user.svg" alt="User profile" class="me-2" style="width: 24px; height: 24px;">
+                <span class="d-none d-sm-inline">@UserManager.GetUserName(User)</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">My Account</a></li>
+                <li><a class="dropdown-item" asp-area="" asp-controller="Orders" asp-action="Index">My Orders</a></li>
+
+                <!-- Show Admin-specific menu items only if user is in "Admin" role -->
+                @if (User.IsInRole("Admin"))
+                {
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Orders" asp-action="Index">Admin Orders</a></li>
+                    <li><a class="dropdown-item" asp-area="Admin" asp-controller="Home" asp-action="Index">Admin Dashboard</a></li>
+                }
+
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="btn btn-link dropdown-item p-0 text-start w-100">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    }
+    else
+    {
+        <!-- Links for logged-out users -->
+        <div class="d-flex">
+            <a class="nav-link me-2" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </div>
+    }
+</div>
+
+<style>
+    .dropdown-toggle::after {
+        margin-left: 0.5em;
+        vertical-align: middle;
+    }
+
+    .dropdown-item {
+        white-space: nowrap;
+    }
+
+    .nav-link img {
+        width: 24px;
+        height: 24px;
+    }
+</style>
