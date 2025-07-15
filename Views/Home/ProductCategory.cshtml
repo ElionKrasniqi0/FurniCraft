@@ -1,47 +1,361 @@
 ﻿@model List<Product>
-<!-- Shop Start -->
 
-
+<!-- Product Category Hero Section -->
 <div class="hero">
     <div class="container">
         <div class="row justify-content-between">
             <div class="col-lg-5">
                 <div class="intro-excerpt">
-                    <h1>Product Category</h1>
+                    <h1>Shop Our Collection</h1>
                 </div>
             </div>
-            <div class="col-lg-7"></div>
+            <div class="col-lg-7">
+            </div>
         </div>
     </div>
 </div>
 
-
-
-<div class="untree_co-section product-section before-footer-section">
+<!-- Product Grid Section -->
+<section class="product-grid py-5">
     <div class="container">
-        @foreach (var item in Model)
-        {
-            <div class="col-lg-2 col-md-6 col-sm-6 pb-1">
-                <div class="product-item mb-4">
-                    <div class="product-img position-relative overflow-hidden">
-                        <a href="/Home/ProductDetailes/@item.ProId">
-                            <img class="img-fluid w-100" src="~/Product/@item.ProImage" alt="">
-                        </a>
-                        <div class="product-action">
-                        </div>
-                    </div>
-                    <div class="text-center py-4">
-                        <a class="h6 text-decoration-none text-truncate" href="">
-                            @item.ProName
-                        </a>
-                        <div class="d-flex align-items-center justify-content-center mt-2">
-                            <h5>€@item.Price</h5><h6 class="text-muted ml-2"></h6>
-                        </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <p class="mb-0">Showing <strong>@Model.Count</strong> products</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sort by: @ViewBag.CurrentSort
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                        <li><a class="dropdown-item" href="?sortOrder=featured">Featured</a></li>
+                        <li><a class="dropdown-item" href="?sortOrder=price_asc">Price: Low to High</a></li>
+                        <li><a class="dropdown-item" href="?sortOrder=price_desc">Price: High to Low</a></li>
+                        <li><a class="dropdown-item" href="?sortOrder=newest">Newest Arrivals</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
+        <div class="row g-4">
+            @foreach (var product in Model)
+            {
+                <div class="col-xl-3 col-lg-4 col-md-6 col-6">
+                    <div class="card product-card h-100 border-0 shadow-sm">
+                        <div class="product-image position-relative overflow-hidden">
+                            <a href="/Home/ProductDetailes/@product.ProId">
+                                <img src="~/Product/@product.ProImage" class="card-img-top" alt="@product.ProName" loading="lazy">
+                            </a>
+                            <div class="product-actions position-absolute w-100 px-3">
+                                <button class="btn btn-dark btn-sm w-100 mb-2 add-to-cart" data-product-id="@product.ProId">Add to Cart</button>
+                                <button class="btn btn-outline-dark btn-sm w-100 quick-view" data-product-id="@product.ProId">Quick View</button>
+                            </div>
+                        </div>
+                        <div class="card-body pt-3 pb-2 px-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h3 class="h6 mb-1">
+                                        <a href="/Home/ProductDetailes/@product.ProId" class="text-dark text-decoration-none">@product.ProName</a>
+                                    </h3>
+                                    <div class="text-muted small mb-2">@product.Category?.CatName</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="price">
+                                    <strong class="text-dark">€@product.Price</strong>
+                                    @if (product.Price > 0)
+                                    {
+                                        <del class="text-muted small ms-1">€@product.Price</del>
+                                    }
+                                </div>
+                                <div class="rating small text-warning">
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <div class="row mt-5">
+                <div class="col-12">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            @if (ViewBag.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)&sortOrder=@ViewBag.CurrentSort" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo;</a>
+                                </li>
+                            }
+
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="?page=@i&sortOrder=@ViewBag.CurrentSort">@i</a>
+                                </li>
+                            }
+
+                            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)&sortOrder=@ViewBag.CurrentSort" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&raquo;</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
                 </div>
             </div>
         }
     </div>
+</section>
+
+<!-- Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Product Quick View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="quickViewContent">
+                <!-- Content will be loaded via AJAX -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<style>
+    .product-card {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+    .product-image {
+        height: 200px;
+        background-color: #f9f9f9;
+    }
+
+        .product-image img {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.05);
+    }
+
+    .product-actions {
+        bottom: -100%;
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover .product-actions {
+        bottom: 15px;
+    }
+
+    .rating {
+        color: #ffc107;
+    }
+</style>
+
+    <script>
+        $(document).ready(function() {
+            // Add to Cart functionality
+            $('.add-to-cart').click(function(e) {
+                e.preventDefault();
+                const productId = $(this).data('product-id');
+                const button = $(this);
+
+                // Show loading state
+                button.html('<span class="spinner-border spinner-border-sm"></span>');
+                button.prop('disabled', true);
+
+                $.ajax({
+                    url: '/Carts/AddToCart',
+                    type: 'POST',
+                    data: {
+                        ProId: productId,
+                        qty: 1
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update cart count in navbar
+                            var currentCount = parseInt($('#cartSummary').text()) || 0;
+                            $('#cartSummary').text(currentCount + 1);
+
+                            // Show success feedback
+                            button.html('<i class="fas fa-check"></i> Added');
+                            setTimeout(function() {
+                                button.html('Add to Cart');
+                                button.prop('disabled', false);
+                            }, 1500);
+                        } else {
+                            // Show error message if not logged in
+                            if (response.redirectUrl) {
+                                window.location.href = response.redirectUrl;
+                            } else {
+                                alert(response.message || 'Failed to add to cart');
+                                button.html('Add to Cart');
+                                button.prop('disabled', false);
+                            }
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while adding to cart');
+                        button.html('Add to Cart');
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+
+            // Quick View functionality
+            $('.quick-view').click(function(e) {
+                e.preventDefault();
+                const productId = $(this).data('product-id');
+                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+
+                // Load product details via AJAX
+                $.ajax({
+                    url: '/Home/ProductQuickView',
+                    type: 'GET',
+                    data: { id: productId },
+                    beforeSend: function() {
+                        $('#quickViewContent').html(`
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        `);
+                    },
+                    success: function(response) {
+                        $('#quickViewContent').html(response);
+                        modal.show();
+
+                        // Initialize quantity controls in the modal
+                        $('.quantity-minus').click(function() {
+                            var input = $(this).parent().find('input');
+                            var value = parseInt(input.val());
+                            if (value > 1) {
+                                input.val(value - 1);
+                            }
+                        });
+
+                        $('.quantity-plus').click(function() {
+                            var input = $(this).parent().find('input');
+                            var value = parseInt(input.val());
+                            if (value < 10) {
+                                input.val(value + 1);
+                            }
+                        });
+
+                        // Handle add to cart in modal
+                        $('#modalAddToCart').click(function() {
+                            const qty = $('#quickViewQuantity').val();
+                            $.ajax({
+                                url: '/Carts/AddToCart',
+                                type: 'POST',
+                                data: {
+                                    ProId: productId,
+                                    qty: qty
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        // Update cart count
+                                        var currentCount = parseInt($('#cartSummary').text()) || 0;
+                                        $('#cartSummary').text(currentCount + parseInt(qty));
+
+                                        // Close modal
+                                        modal.hide();
+
+                                        // Show toast notification
+                                        showToast('Product added to cart!');
+                                    } else {
+                                        if (response.redirectUrl) {
+                                            window.location.href = response.redirectUrl;
+                                        } else {
+                                            alert(response.message || 'Failed to add to cart');
+                                        }
+                                    }
+                                },
+                                error: function() {
+                                    alert('An error occurred while adding to cart');
+                                }
+                            });
+                        });
+                    },
+                    error: function() {
+                        $('#quickViewContent').html(`
+                            <div class="alert alert-danger">
+                                Failed to load product details. Please try again.
+                            </div>
+                        `);
+                        modal.show();
+                    }
+                });
+            });
+
+            // Helper function to show toast notifications
+            function showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed bottom-0 end-0 p-3';
+                toast.style.zIndex = '11';
+                toast.innerHTML = `
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header">
+                            <strong class="me-auto">Notification</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+
+                // Remove toast after 3 seconds
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+        });
+    </script>
+}

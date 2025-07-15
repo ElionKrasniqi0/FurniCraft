@@ -22,21 +22,25 @@
 	</div>
 </div>
 
-<div class="container-fluid">
-	<div class="row align-items-center  py-3 px-xl-5 d-none d-lg-flex">
-		<div class="col-lg-4">
-		</div>
-		<div class="col-lg-4 col-6 text-left">
-			<form asp-action="SearchProduct" method="post">
-				<div class="input-group">
-					<input type="text" name="NamePro" class="form-control" placeholder="Search for products">
-					<div class="input-group-append">
-						<span class="input-group-text  btn-second  btn-submit   btn btn-success">
-							<i class="fa fa-search"></i>
-						</span>
+<div class="container mb-5">
+	<!-- Search and Filter Bar -->
+	<div class="row align-content-center">
+		<div class="col-12">
+			<div class="card border-0">
+				<div class="card-body p-3">
+					<div class="row g-3 align-items-center">
+						<div class="col-md-6">
+							<div class="input-group">
+								<input type="text" class="form-control form-control-lg border-end-0"
+									   placeholder="Search for furniture..." id="searchInput">
+								<button class="btn btn-outline-secondary border-start-0" type="button" id="searchButton">
+									<i class="fas fa-search"></i>
+								</button>
+							</div>
+						</div>
 					</div>
 				</div>
-			</form>
+			</div>
 		</div>
 	</div>
 </div>
@@ -319,4 +323,119 @@
 		</div>
 	</div>
 </div>
+<style>
+    /* Add to your existing styles */
+    #searchInput:focus {
+        border-color: #3b5d50;
+        box-shadow: 0 0 0 0.25rem rgba(59, 93, 80, 0.25);
+    }
+
+    .search-highlight {
+        background-color: #fff8e1;
+        font-weight: bold;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 2rem;
+        grid-column: 1 / -1;
+    }
+
+        .no-results i {
+            font-size: 3rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }</style>
+
 <!-- End Testimonial Slider -->
+@section Scripts {
+	<script>
+		$(document).ready(function() {
+			// ... (keep your existing code)
+
+			// Search functionality
+			function performSearch() {
+				var value = $('#searchInput').val().toLowerCase().trim();
+				if (value.length === 0) {
+					$('.product-card').parent().show();
+					return;
+				}
+
+				$('.product-card').each(function() {
+					var productText = $(this).text().toLowerCase();
+					var productCard = $(this).closest('.col-xl-3, .col-lg-4, .col-md-6, .col-6'); // Match your column classes
+
+					if (productText.indexOf(value) > -1) {
+						productCard.show();
+					} else {
+						productCard.hide();
+					}
+				});
+			}
+
+			// Search on button click
+			$('#searchButton').click(function() {
+				performSearch();
+			});
+
+			// Search on Enter key press
+			$('#searchInput').keypress(function(e) {
+				if (e.which === 13) { // Enter key
+					performSearch();
+				}
+			});
+
+			// Clear search when input is empty
+			$('#searchInput').on('input', function() {
+				if ($(this).val().trim() === '') {
+					performSearch(); // This will show all products
+				}
+			});
+
+			// ... (rest of your existing JavaScript code)
+		});
+
+				function performSearch() {
+			var value = $('#searchInput').val().toLowerCase().trim();
+			var hasResults = false;
+
+			if (value.length === 0) {
+				$('.product-card').parent().show();
+				$('#noResultsMessage').remove();
+				return;
+			}
+
+			$('.product-card').each(function() {
+				var productText = $(this).text().toLowerCase();
+				var productCard = $(this).closest('.col-xl-3, .col-lg-4, .col-md-6, .col-6');
+
+				if (productText.indexOf(value) > -1) {
+					productCard.show();
+					hasResults = true;
+					// Optional: highlight matching text
+					$(this).html($(this).html().replace(
+						new RegExp(value, 'gi'),
+						match => `<span class="search-highlight">${match}</span>`
+					));
+				} else {
+					productCard.hide();
+				}
+			});
+
+			// Add no results message if needed
+			if (!hasResults && !$('#noResultsMessage').length) {
+				$('.row.g-4').append(`
+					<div class="col-12 no-results" id="noResultsMessage">
+						<i class="fas fa-search"></i>
+						<h4>No products found</h4>
+						<p>Try different search terms</p>
+					</div>
+				`);
+			} else if (hasResults) {
+				$('#noResultsMessage').remove();
+			}
+		}
+
+		var productText = $(this).find('.card-title').text().toLowerCase();
+	</script>
+}
