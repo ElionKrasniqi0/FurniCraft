@@ -10,7 +10,6 @@
                     <p class="mb-4">Discover our premium collection of handcrafted furniture</p>
                     <p>
                         <a href="/Home/Product" class="btn btn-secondary me-2">Shop Now</a>
-                        
                     </p>
                 </div>
             </div>
@@ -70,17 +69,17 @@
                         </div>
 
                         <!-- Product Image -->
-                        <div class="product-image-container">
+                        <div class="product-image position-relative overflow-hidden">
                             <a href="/Home/ProductDetailes/@item.ProId" class="product-image-link">
                                 <img src="~/Product/@item.ProImage" alt="@item.ProName"
-                                     class="card-img-top p-3" loading="lazy">
+                                     class="card-img-top p-3" style="height: 200px; object-fit: contain;" loading="lazy">
                             </a>
-                            <div class="product-actions">
-                                <button class="btn-wishlist" title="Add to wishlist">
-                                    <i class="far fa-heart"></i>
+                            <div class="product-actions position-absolute w-100 px-3">
+                                <button class="btn btn-dark btn-sm w-100 mb-2 add-to-cart" data-product-id="@item.ProId">
+                                    <i class="fas fa-shopping-cart me-1"></i> Add to Cart
                                 </button>
-                                <button class="btn-quickview" title="Quick view">
-                                    <i class="fas fa-eye"></i>
+                                <button class="btn btn-outline-dark btn-sm w-100 quick-view" data-product-id="@item.ProId">
+                                    <i class="fas fa-eye me-1"></i> Quick View
                                 </button>
                             </div>
                         </div>
@@ -97,33 +96,24 @@
                             <!-- Rating -->
                             <div class="product-rating mb-2">
                                 <div class="stars">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star-half-alt text-warning"></i>
                                 </div>
                                 <small class="text-muted">(24 reviews)</small>
                             </div>
 
-                            <!-- Price and Add to Cart -->
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="product-price">
-                                    <span class="current-price">€@item.Price.ToString("N2")</span>
-                                    @if (item.Price > 500)
-                                    {
-                                        <span class="original-price text-muted text-decoration-line-through">
-                                            €@((item.Price * 1.2m).ToString("N2"))
-                                        </span>
-                                    }
-                                </div>
-                                <form class="add-to-cart-form" method="post" action="/Carts/AddToCart">
-                                    <input type="hidden" name="ProId" value="@item.ProId" />
-                                    <input type="hidden" name="qty" value="1" />
-                                    <button type="submit" class="btn btn-sm btn-primary btn-add-to-cart">
-                                        <i class="fas fa-shopping-cart me-1"></i> Add
-                                    </button>
-                                </form>
+                            <!-- Price -->
+                            <div class="product-price">
+                                <span class="current-price fw-bold">€@item.Price.ToString("N2")</span>
+                                @if (item.Price > 500)
+                                {
+                                    <span class="original-price text-muted text-decoration-line-through small ms-1">
+                                        €@((item.Price * 1.2m).ToString("N2"))
+                                    </span>
+                                }
                             </div>
                         </div>
                     </div>
@@ -150,6 +140,38 @@
             </ul>
         </nav>
     </div>
+
+<!-- Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Product Quick View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="quickViewContent">
+                <!-- Content will be loaded via AJAX -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add to Cart Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="addToCartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Product added to cart!
+        </div>
+    </div>
 </div>
 
 <style>
@@ -158,7 +180,6 @@
         transition: all 0.3s ease;
         border-radius: 8px;
         overflow: hidden;
-        position: relative;
     }
 
         .product-card:hover {
@@ -166,25 +187,32 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-    /* Product Image Container */
-    .product-image-container {
-        position: relative;
-        background-color: #f8f9fa;
+    /* Product Image */
+    .product-image {
         height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        background-color: #f9f9f9;
     }
 
-    .product-image-link img {
-        max-height: 180px;
-        width: auto;
-        object-fit: contain;
-        transition: transform 0.3s ease;
-    }
+        .product-image img {
+            height: 100%;
+            width: 100%;
+            object-fit: contain;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
 
-    .product-card:hover .product-image-link img {
+    .product-card:hover .product-image img {
         transform: scale(1.05);
+    }
+
+    /* Product Actions */
+    .product-actions {
+        bottom: -100%;
+        transition: all 0.3s ease;
+    }
+
+    .product-card:hover .product-actions {
+        bottom: 15px;
     }
 
     /* Product Badges */
@@ -200,41 +228,6 @@
             font-size: 0.7rem;
             font-weight: 500;
             padding: 4px 8px;
-        }
-
-    /* Product Actions */
-    .product-actions {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        display: flex;
-        flex-direction: column;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .product-card:hover .product-actions {
-        opacity: 1;
-    }
-
-    .product-actions button {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: white;
-        border: none;
-        margin-bottom: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        color: #333;
-        transition: all 0.2s ease;
-    }
-
-        .product-actions button:hover {
-            background: #3b5d50;
-            color: white;
         }
 
     /* Product Title */
@@ -259,13 +252,7 @@
             }
 
     /* Product Price */
-    .product-price {
-        display: flex;
-        flex-direction: column;
-    }
-
     .current-price {
-        font-weight: 700;
         color: #3b5d50;
         font-size: 1.1rem;
     }
@@ -275,94 +262,180 @@
     }
 
     /* Product Rating */
-    .product-rating {
-        display: flex;
-        align-items: center;
+    .product-rating .stars {
+        color: #ffc107;
     }
 
-        .product-rating .stars {
-            color: #ffc107;
-            margin-right: 5px;
+   
+        /* Pagination */
+        .page-item.active .page-link {
+            background-color: #3b5d50;
+            border-color: #3b5d50;
         }
 
-    /* Add to Cart Button */
-    .btn-add-to-cart {
-        border-radius: 4px;
-        padding: 0.35rem 0.75rem;
-        font-size: 0.85rem;
-        background-color: #3b5d50;
-        border-color: #3b5d50;
-    }
-
-        .btn-add-to-cart:hover {
-            background-color: #2a4238;
-            border-color: #2a4238;
+        .page-link {
+            color: #3b5d50;
         }
 
-    /* Pagination */
-    .page-item.active .page-link {
-        background-color: #3b5d50;
-        border-color: #3b5d50;
-    }
+        /* Responsive Adjustments */
+        @@media (max-width: 767.98px) {
+            .product-image-container {
+                height: 160px;
+            }
 
-    .page-link {
-        color: #3b5d50;
-    }
+            .product-title {
+                font-size: 0.9rem;
+                height: 2.4rem;
+            }
 
-    /* Responsive Adjustments */
-    @@media (max-width: 767.98px) {
-        .product-image-container {
-            height: 160px;
+            .current-price {
+                font-size: 1rem;
+            }
         }
-
-        .product-title {
-            font-size: 0.9rem;
-            height: 2.4rem;
-        }
-
-        .current-price {
-            font-size: 1rem;
-        }
-    }
 </style>
 
 <script>
     $(document).ready(function() {
-        // Add to cart functionality
-        $('.add-to-cart-form').on('submit', function(e) {
+        // Add to Cart functionality
+        $('.add-to-cart').click(function(e) {
             e.preventDefault();
-            var form = $(this);
-            var button = form.find('.btn-add-to-cart');
-            var originalText = button.html();
+            const productId = $(this).data('product-id');
+            const button = $(this);
 
-            // Disable button and show loading state
-            button.prop('disabled', true)
-                 .html('<span class="spinner-border spinner-border-sm me-1"></span>');
+            // Show loading state
+            button.html('<span class="spinner-border spinner-border-sm"></span>');
+            button.prop('disabled', true);
 
-            // AJAX request
             $.ajax({
-                url: form.attr('action'),
-                method: form.attr('method'),
-                data: form.serialize(),
+                url: '/Carts/AddToCart',
+                type: 'POST',
+                data: {
+                    ProId: productId,
+                    qty: 1
+                },
                 success: function(response) {
                     if (response.success) {
-                        // Update cart count
+                        // Update cart count in navbar
                         var currentCount = parseInt($('#cartSummary').text()) || 0;
                         $('#cartSummary').text(currentCount + 1);
 
+                        // Show toast notification
+                        var toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
+                        toast.show();
+
                         // Show success feedback
-                        button.html('<i class="fas fa-check me-1"></i>');
+                        button.html('<i class="fas fa-check"></i> Added');
                         setTimeout(function() {
-                            button.html(originalText).prop('disabled', false);
+                            button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
+                            button.prop('disabled', false);
                         }, 1500);
+                    } else {
+                        if (response.redirectUrl) {
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            alert(response.message || 'Failed to add to cart');
+                            button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
+                            button.prop('disabled', false);
+                        }
                     }
                 },
                 error: function() {
-                    // Show error feedback
-                    button.html('<i class="fas fa-times me-1"></i>');
-                    setTimeout(function() {
-                        button.html(originalText).prop('disabled', false);
-                    }, 1500);
+                    alert('An error occurred while adding to cart');
+                    button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
+                    button.prop('disabled', false);
+                }
+            });
+        });
+
+        // Quick View functionality
+        $('.quick-view').click(function(e) {
+            e.preventDefault();
+            const productId = $(this).data('product-id');
+            const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+
+            // Load product details via AJAX
+            $.ajax({
+                url: '/Home/ProductQuickView',
+                type: 'GET',
+                data: { id: productId },
+                beforeSend: function() {
+                    $('#quickViewContent').html(`
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    `);
+                },
+                success: function(response) {
+                    $('#quickViewContent').html(response);
+                    modal.show();
+
+                    // Initialize quantity controls in the modal
+                    $('.quantity-minus').click(function() {
+                        var input = $(this).parent().find('input');
+                        var value = parseInt(input.val());
+                        if (value > 1) {
+                            input.val(value - 1);
+                        }
+                    });
+
+                    $('.quantity-plus').click(function() {
+                        var input = $(this).parent().find('input');
+                        var value = parseInt(input.val());
+                        if (value < 10) {
+                            input.val(value + 1);
+                        }
+                    });
+
+                    // Handle add to cart in modal
+                    $('#modalAddToCart').click(function() {
+                        const qty = $('#quickViewQuantity').val();
+                        const button = $(this);
+                        const originalText = button.html();
+
+                        button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+                        $.ajax({
+                            url: '/Carts/AddToCart',
+                            type: 'POST',
+                            data: {
+                                ProId: productId,
+                                qty: qty
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    // Update cart count
+                                    var currentCount = parseInt($('#cartSummary').text()) || 0;
+                                    $('#cartSummary').text(currentCount + parseInt(qty));
+
+                                    // Close modal
+                                    modal.hide();
+
+                                    // Show toast notification
+                                    var toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
+                                    toast.show();
+                                } else {
+                                    if (response.redirectUrl) {
+                                        window.location.href = response.redirectUrl;
+                                    } else {
+                                        alert(response.message || 'Failed to add to cart');
+                                    }
+                                }
+                            },
+                            error: function() {
+                                alert('An error occurred while adding to cart');
+                            }
+                        });
+                    });
+                },
+                error: function() {
+                    $('#quickViewContent').html(`
+                        <div class="alert alert-danger">
+                            Failed to load product details. Please try again.
+                        </div>
+                    `);
+                    modal.show();
                 }
             });
         });
@@ -371,12 +444,12 @@
         $('select').on('change', function() {
             var categoryId = $(this).val();
             if (categoryId === "All Categories") {
-                $('.product-card').show();
+                $('.product-card').parent().show();
             } else {
                 $('.product-card').each(function() {
                     // You would need to add data-category-id attribute to each product card
                     // and filter based on that in a real implementation
-                    $(this).toggle($(this).data('category-id') == categoryId);
+                    $(this).closest('.col-12').toggle($(this).find('.product-category').text().includes(categoryId));
                 });
             }
         });

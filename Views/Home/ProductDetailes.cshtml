@@ -18,13 +18,13 @@
 <!-- Product Detail Section -->
 <section class="py-5">
     <div class="container">
-        <div class="row g-5">
+        <div class="row  p-5 border-start border-end border-bottom rounded-bottom border-top">
             <!-- Product Gallery -->
             <div class="col-lg-6">
                 <div class="product-gallery">
-                    <div class="main-image mb-3 border rounded-3 overflow-hidden">
+                    <div class="main-image mb-3 ">
                         <img src="~/Product/@Model.ProImage" alt="@Model.ProName" 
-                             class="img-fluid w-100" style="max-height: 500px; object-fit: contain;">
+                             class="img-fluid w-120" style="max-height: 350px; object-fit: contain;">
                     </div>
                 </div>
             </div>
@@ -151,7 +151,7 @@
                         </li>
                     </ul>
                     
-                    <div class="tab-content bg-white p-4 border-start border-end border-bottom rounded-bottom" id="productTabsContent">
+                    <div class="tab-content bg-white p-4 border-start border-end border-bottom rounded-bottom border-top" id="productTabsContent">
                         <!-- Description Tab -->
                         <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
                             <h4 class="mb-3">Product Description</h4>
@@ -366,7 +366,6 @@
 <style>
     /* Product Gallery */
     .product-gallery .main-image {
-        background-color: #f8f9fa;
         display: flex;
         align-items: center;
         justify-content: center;

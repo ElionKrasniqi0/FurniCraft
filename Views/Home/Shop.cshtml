@@ -20,7 +20,7 @@
     <!-- Search and Filter Bar -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card shadow-sm border-0">
+            <div class="card1  border-0">
                 <div class="card-body p-3">
                     <div class="row g-3 align-items-center">
                         <div class="col-md-6">
@@ -52,6 +52,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- Categories Section -->
     <section id="categories" class="mb-5">
@@ -87,7 +88,7 @@
             <div class="d-flex gap-2">
                 <a href="/Home/Product" class="btn btn-sm btn-outline-primary">View All</a>
                 <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-sm btn.btn-primary  dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         Sort by: Featured
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="sortDropdown">
@@ -175,7 +176,8 @@
                 </li>
             </ul>
         </nav>
-    </section>
+</div>
+
 
     <!-- Quick View Modal -->
     <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
@@ -279,6 +281,18 @@
 
 <!-- Styles -->
     <style>
+        .card1 {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid rgba(0, 0, 0, .125);
+            border-radius: .25rem;
+        }
+
         .product-card {
             transition: all 0.3s ease;
             border-radius: 8px;
@@ -292,7 +306,7 @@
 
         .product-image {
             height: 200px;
-            background-color: #f9f9f9;
+            background-color: #fff;
         }
 
             .product-image img {
@@ -340,7 +354,7 @@
         }
 
         .search-highlight {
-            background-color: #fff8e1;
+            background-color: #fff;
             font-weight: bold;
         }
 
@@ -352,9 +366,42 @@
 
             .no-results i {
                 font-size: 3rem;
-                color: #6c757d;
+                color:#fff;
                 margin-bottom: 1rem;
             }
+
+        .card-body {
+            flex: 1 1 auto;
+            padding: 1rem 1rem;
+            background-color: #eff2f1;
+        }
+
+    /* Pagination */
+    .page-item.active .page-link {
+        background-color: #3b5d50;
+        border-color: #3b5d50;
+    }
+
+    .page-link {
+        color: #3b5d50;
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 767.98px) {
+        .product-image-container {
+            height: 160px;
+        }
+
+        .product-title {
+            font-size: 0.9rem;
+            height: 2.4rem;
+        }
+
+        .current-price {
+            font-size: 1rem;
+        }
+    }
+
     </style>
 
 <!-- Scripts -->

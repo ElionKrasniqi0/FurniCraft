@@ -33,29 +33,29 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
+                                    <th>Name</th>
                                     <th>Price</th>
                                     <th>Quantity</th>
                                     <th>Total</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="cart-items">
                                 @foreach (var item in Model.Carts)
                                 {
-                                    <tr>
-                                        <td>
-                                            <!-- Display the product image -->
+                                    <tr id="cart-item-@item.CartId" class="cart-item-row">
+                                        <td class="align-middle">
                                             <img src="~/Product/@item.Product.ProImage" style="width: 100px; height: auto;" />
                                         </td>
-                                        <td>@item.Product.ProName</td>
-                                        <td>€@item.Product.Price</td>
-                                        <td>@item.Qty</td>
-                                        <td>€@(item.Product.Price * item.Qty)</td>
-                                        <td>
-                                            <form asp-action="RemoveFromCart" method="post">
-                                                <input type="hidden" name="CartId" value="@item.CartId" />
-                                                <button type="submit" class="btn btn-danger">Remove</button>
-                                            </form>
+                                        <td class="align-middle">@item.Product.ProName</td>
+                                        <td class="align-middle">€@item.Product.Price</td>
+                                        <td class="align-middle">@item.Qty</td>
+                                        <td class="align-middle">€@(item.Product.Price * item.Qty)</td>
+                                        <td class="align-middle">
+                                            <button class="btn btn-danger remove-item btn-sm"
+                                                    data-cart-id="@item.CartId">
+                                                Remove
+                                            </button>
                                         </td>
                                     </tr>
                                 }
@@ -125,3 +125,80 @@
         }
     </div>
 </div>
+@section Scripts {
+    <style>
+        .cart-item-row {
+            transition: all 0.3s ease;
+        }
+
+        .removing {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            border: none;
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+            // Remove item from cart
+            $(document).on('click', '.remove-item', function(e) {
+                e.preventDefault();
+                const cartId = $(this).data('cart-id');
+                const button = $(this);
+                const row = $(`#cart-item-${cartId}`);
+
+                // Disable all remove buttons during operation
+                $('.remove-item').prop('disabled', true);
+                button.html('<span class="spinner-border spinner-border-sm"></span>');
+
+                // Add removing class to start transition
+                row.addClass('removing');
+
+                $.ajax({
+                    url: '/Carts/RemoveFromCart',
+                    type: 'POST',
+                    data: { cartId: cartId },
+                    success: function(response) {
+                        // Wait for CSS transition to complete before removing
+                        setTimeout(function() {
+                            row.remove();
+
+                            // Update totals if needed
+                            if (response.newTotal !== undefined) {
+                                $('#cart-subtotal').text('€' + response.newTotal.toFixed(2));
+                                $('#cart-total').text('€' + response.newTotal.toFixed(2));
+                            }
+
+                            // Update cart count in navbar
+                            if (response.itemCount !== undefined) {
+                                $('#cartSummary').text(response.itemCount);
+                            }
+
+                            // Check if cart is empty
+                            if ($('#cart-items tr').length === 0) {
+                                $('.site-blocks-table').replaceWith(
+                                    '<div class="alert alert-info" role="alert">' +
+                                    'Your cart is empty. <a href="/Home/Product">Continue shopping</a> to add products.' +
+                                    '</div>'
+                                );
+                                $('.row:has(#cart-items)').next().remove();
+                            }
+
+                            // Re-enable buttons
+                            $('.remove-item').prop('disabled', false);
+                        }, 300); // Match this with CSS transition duration
+                    },
+                    error: function() {
+                        alert('Error removing item from cart');
+                        row.removeClass('removing');
+                        button.html('Remove');
+                        $('.remove-item').prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}
