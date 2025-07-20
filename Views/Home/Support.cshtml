@@ -1,0 +1,326 @@
+﻿@{
+    ViewData["Title"] = "Customer Support";
+}
+
+<!-- Hero Section -->
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="intro-excerpt">
+                    <h1>Customer Support</h1>
+                    <p class="mb-4">We're here to help you with any questions or concerns about your Furni experience.</p>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="hero-img-wrap">
+                    <img src="~/images/support-hero.png" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Hero Section -->
+
+<div class="untree_co-section">
+    <div class="container">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="card mb-5">
+                    <div class="card-body p-5">
+                        <h2 class="mb-4">How Can We Help You Today?</h2>
+
+                        <!-- Support Topics -->
+                        <div class="accordion mb-5" id="supportTopics">
+                            <!-- Order Support -->
+                            <div class="accordion-item mb-3 border rounded">
+                                <h3 class="accordion-header" id="headingOrders">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrders" aria-expanded="false" aria-controls="collapseOrders">
+                                        <i class="fas fa-shopping-cart me-3"></i> Order Support
+                                    </button>
+                                </h3>
+                                <div id="collapseOrders" class="accordion-collapse collapse" aria-labelledby="headingOrders" data-bs-parent="#supportTopics">
+                                    <div class="accordion-body">
+                                        <h4>Common Order Questions</h4>
+                                        <ul class="list-unstyled">
+                                            <li class="mb-3">
+                                                <strong>How do I track my order?</strong>
+                                                <p>Once your order ships, you'll receive a tracking number via email. You can track your package directly through the carrier's website.</p>
+                                            </li>
+                                            <li class="mb-3">
+                                                <strong>Can I modify or cancel my order?</strong>
+                                                <p>We process orders quickly to ensure fast delivery. Contact us immediately at <a href="mailto:support@furni.com">support@furni.com</a> if you need to make changes.</p>
+                                            </li>
+                                            <li class="mb-3">
+                                                <strong>Why is my order delayed?</strong>
+                                                <p>Delays can occur due to high demand, shipping carrier issues, or inventory checks. We'll notify you if there are any significant delays.</p>
+                                            </li>
+                                        </ul>
+                                        <a href="#" class="btn btn-outline-primary">View All Order FAQs</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Returns & Exchanges -->
+                            <div class="accordion-item mb-3 border rounded">
+                                <h3 class="accordion-header" id="headingReturns">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReturns" aria-expanded="false" aria-controls="collapseReturns">
+                                        <i class="fas fa-exchange-alt me-3"></i> Returns & Exchanges
+                                    </button>
+                                </h3>
+                                <div id="collapseReturns" class="accordion-collapse collapse" aria-labelledby="headingReturns" data-bs-parent="#supportTopics">
+                                    <div class="accordion-body">
+                                        <h4>Our Return Policy</h4>
+                                        <p>We offer a 30-day return policy for most items. Items must be in original condition with all packaging materials.</p>
+                                        <h5 class="mt-4">How to Initiate a Return:</h5>
+                                        <ol>
+                                            <li>Log in to your Furni account</li>
+                                            <li>Navigate to "My Orders"</li>
+                                            <li>Select the item(s) you wish to return</li>
+                                            <li>Follow the return authorization process</li>
+                                        </ol>
+                                        <div class="alert alert-info mt-4">
+                                            <i class="fas fa-info-circle me-2"></i> Some items are final sale, including custom orders and clearance items.
+                                        </div>
+                                        <a href="#" class="btn btn-outline-primary">Start a Return</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Product Care -->
+                            <div class="accordion-item mb-3 border rounded">
+                                <h3 class="accordion-header" id="headingProductCare">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProductCare" aria-expanded="false" aria-controls="collapseProductCare">
+                                        <i class="fas fa-couch me-3"></i> Product Care & Assembly
+                                    </button>
+                                </h3>
+                                <div id="collapseProductCare" class="accordion-collapse collapse" aria-labelledby="headingProductCare" data-bs-parent="#supportTopics">
+                                    <div class="accordion-body">
+                                        <h4>Caring for Your Furni Products</h4>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h5>Wood Furniture</h5>
+                                                <ul>
+                                                    <li>Dust regularly with a soft, dry cloth</li>
+                                                    <li>Avoid direct sunlight and heat sources</li>
+                                                    <li>Use coasters under drinks</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h5>Upholstered Items</h5>
+                                                <ul>
+                                                    <li>Vacuum regularly with upholstery attachment</li>
+                                                    <li>Blot spills immediately with clean cloth</li>
+                                                    <li>Rotate cushions periodically</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <h5 class="mt-4">Assembly Guides</h5>
+                                        <p>Most Furni products come with detailed assembly instructions. For digital copies:</p>
+                                        <a href="#" class="btn btn-outline-primary me-2">Download Assembly Guides</a>
+                                        <a href="#" class="btn btn-outline-secondary">Watch Assembly Videos</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Support -->
+                            <div class="accordion-item mb-3 border rounded">
+                                <h3 class="accordion-header" id="headingAccount">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAccount" aria-expanded="false" aria-controls="collapseAccount">
+                                        <i class="fas fa-user me-3"></i> Account & Technical Support
+                                    </button>
+                                </h3>
+                                <div id="collapseAccount" class="accordion-collapse collapse" aria-labelledby="headingAccount" data-bs-parent="#supportTopics">
+                                    <div class="accordion-body">
+                                        <h4>Managing Your Account</h4>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h5>Password Reset</h5>
+                                                <p>If you've forgotten your password, you can reset it using our password recovery system.</p>
+                                                <a href="#" class="btn btn-sm btn-outline-primary">Reset Password</a>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h5>Update Account Details</h5>
+                                                <p>Keep your shipping addresses, payment methods, and contact information up to date.</p>
+                                                <a href="#" class="btn btn-sm btn-outline-primary">Edit Account</a>
+                                            </div>
+                                        </div>
+                                        <h5 class="mt-4">Technical Issues</h5>
+                                        <p>Experiencing problems with our website or mobile app? Try these troubleshooting steps:</p>
+                                        <ul>
+                                            <li>Clear your browser cache and cookies</li>
+                                            <li>Try a different browser or device</li>
+                                            <li>Ensure you have a stable internet connection</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Form -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body p-4">
+                                <h3 class="mb-4">Contact Our Support Team</h3>
+                                <p>Can't find what you're looking for? Our customer care team is available to help.</p>
+
+                                <form>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6 mb-3 mb-md-0">
+                                            <label for="name" class="form-label">Full Name</label>
+                                            <input type="text" class="form-control" id="name" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="email" class="form-label">Email Address</label>
+                                            <input type="email" class="form-control" id="email" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="orderNumber" class="form-label">Order Number (if applicable)</label>
+                                        <input type="text" class="form-control" id="orderNumber">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="topic" class="form-label">Topic</label>
+                                        <select class="form-select" id="topic">
+                                            <option selected>Select a topic</option>
+                                            <option>Order Inquiry</option>
+                                            <option>Returns & Exchanges</option>
+                                            <option>Product Questions</option>
+                                            <option>Shipping Information</option>
+                                            <option>Account Support</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="message" class="form-label">Message</label>
+                                        <textarea class="form-control" id="message" rows="5" required></textarea>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input" id="urgent">
+                                        <label class="form-check-label" for="urgent">This is an urgent matter</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-large text-primary mb-3">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3>Live Chat Support</h3>
+                        <p class="mb-4">Get immediate assistance from our support team during business hours.</p>
+                        <a href="#" class="btn btn-primary w-100 mb-2">Start Live Chat</a>
+                        <small class="text-muted">Available Mon-Fri, 9AM-6PM EST</small>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="mb-3">Contact Information</h4>
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-phone-alt me-2 text-primary"></i>
+                                <strong>Phone:</strong> +(383) 045 804 555
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-envelope me-2 text-primary"></i>
+                                <strong>Email:</strong> support@furni.com
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                <strong>Address:</strong> Meto Bajraktari, Prishtina
+                            </li>
+                        </ul>
+                        <hr>
+                        <h5 class="mt-4">Business Hours</h5>
+                        <ul class="list-unstyled">
+                            <li>Monday-Friday: 9:00 AM - 6:00 PM</li>
+                            <li>Saturday: 10:00 AM - 4:00 PM</li>
+                            <li>Sunday: Closed</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h4 class="mb-3">Helpful Resources</h4>
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Shipping Information
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Return Policy
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Warranty Information
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Payment Options
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                Size Guides
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Support Guarantee Section -->
+<div class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <div class="icon-large text-primary mb-3">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <h2 class="mb-3">Our Customer Support Guarantee</h2>
+                <p class="lead mb-4">At Furni, we're committed to providing exceptional customer service. Here's our promise to you:</p>
+
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="h-100 p-4 bg-white rounded shadow-sm text-center">
+                            <div class="icon-medium text-primary mb-3">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h5>24-Hour Response</h5>
+                            <p class="mb-0">We respond to all inquiries within one business day</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h-100 p-4 bg-white rounded shadow-sm text-center">
+                            <div class="icon-medium text-primary mb-3">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h5>Expert Assistance</h5>
+                            <p class="mb-0">Knowledgeable staff trained in furniture and design</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h-100 p-4 bg-white rounded shadow-sm text-center">
+                            <div class="icon-medium text-primary mb-3">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <h5>Satisfaction Guaranteed</h5>
+                            <p class="mb-0">We'll work until you're completely satisfied</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
