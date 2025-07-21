@@ -135,6 +135,44 @@ namespace FurniCraft.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult Support(Contact model)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Contacts.Add(model);
+                _context.SaveChanges();
+
+                // Add success message to TempData
+                TempData["SupportMessage"] = "Your support request has been submitted successfully!";
+
+                return RedirectToAction("Support");
+            }
+            return View(model);
+        }
+
+        // Add these actions to your HomeController
+        [HttpPost]
+        public IActionResult StartChatSession()
+        {
+            // In a real app, you would create a chat session in your database
+            return Json(new { success = true, sessionId = Guid.NewGuid() });
+        }
+
+        [HttpPost]
+        public IActionResult SendChatMessage(string sessionId, string message)
+        {
+            // In a real app, you would save the message and notify support agents
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult EndChatSession(string sessionId)
+        {
+            // In a real app, you would close the chat session
+            return Json(new { success = true });
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
