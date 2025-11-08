@@ -1,14 +1,16 @@
 ﻿using FurniCraft.Data;
+using FurniCraft.Enum;
 using FurniCraft.Models;
 using FurniCraft.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System; // Add this using statement
 
 namespace FurniCraft.Controllers
 {
-    [Authorize] // Requires authentication but not specific role
+    [Authorize]
     public class OrdersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,16 +22,33 @@ namespace FurniCraft.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string status = "")
         {
             var userId = _userManager.GetUserId(User);
 
-            var orders = await _context.Orders
+            var query = _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
-                .Where(o => o.UserId == userId)  // Filter by current user
+                .Where(o => o.UserId == userId);
+
+            // Filter by status - FIXED: Use System.Enum explicitly
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (System.Enum.TryParse<OrderStatus>(status, out var orderStatus))
+                {
+                    query = query.Where(o => o.Status == orderStatus);
+                }
+            }
+
+            var orders = await query
+                .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
+
+            ViewBag.CurrentStatus = status;
+
+            // FIXED: Use System.Enum explicitly
+            ViewBag.StatusList = System.Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>();
 
             return View(orders);
         }
@@ -42,7 +61,8 @@ namespace FurniCraft.Controllers
                 .Include(o => o.User)
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
-                .FirstOrDefaultAsync(o => o.OrderId == id && o.UserId == userId);  // Ensure user owns the order
+                .ThenInclude(p => p.Category)
+                .FirstOrDefaultAsync(o => o.OrderId == id && o.UserId == userId);
 
             if (order == null)
             {
@@ -50,6 +70,32 @@ namespace FurniCraft.Controllers
             }
 
             return View(order);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+            var order = await _context.Orders
+                .FirstOrDefaultAsync(o => o.OrderId == id && o.UserId == userId);
+
+            if (order == null)
+            {
+                return Json(new { success = false, message = "Order not found." });
+            }
+
+            // Only allow cancellation for orders that haven't been shipped
+            if (order.Status >= OrderStatus.Shipped)
+            {
+                return Json(new { success = false, message = "Cannot cancel order that has already been shipped." });
+            }
+
+            order.Status = OrderStatus.Cancelled;
+            order.CancelledDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Order cancelled successfully." });
         }
     }
 }

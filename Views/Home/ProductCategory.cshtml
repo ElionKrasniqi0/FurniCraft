@@ -194,168 +194,172 @@
     .rating {
         color: #ffc107;
     }
+
+    .footer-section {
+        padding: 130px 0;
+    }
 </style>
 
-    <script>
-        $(document).ready(function() {
-            // Add to Cart functionality
-            $('.add-to-cart').click(function(e) {
-                e.preventDefault();
-                const productId = $(this).data('product-id');
-                const button = $(this);
+<script>
+    $(document).ready(function() {
+        // Add to Cart functionality
+        $('.add-to-cart').click(function(e) {
+            e.preventDefault();
+            const productId = $(this).data('product-id');
+            const button = $(this);
 
-                // Show loading state
-                button.html('<span class="spinner-border spinner-border-sm"></span>');
-                button.prop('disabled', true);
+            // Show loading state
+            button.html('<span class="spinner-border spinner-border-sm"></span>');
+            button.prop('disabled', true);
 
-                $.ajax({
-                    url: '/Carts/AddToCart',
-                    type: 'POST',
-                    data: {
-                        ProId: productId,
-                        qty: 1
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            // Update cart count in navbar
-                            var currentCount = parseInt($('#cartSummary').text()) || 0;
-                            $('#cartSummary').text(currentCount + 1);
+            $.ajax({
+                url: '/Carts/AddToCart',
+                type: 'POST',
+                data: {
+                    ProId: productId,
+                    qty: 1
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update cart count in navbar
+                        var currentCount = parseInt($('#cartSummary').text()) || 0;
+                        $('#cartSummary').text(currentCount + 1);
 
-                            // Show success feedback
-                            button.html('<i class="fas fa-check"></i> Added');
-                            setTimeout(function() {
-                                button.html('Add to Cart');
-                                button.prop('disabled', false);
-                            }, 1500);
+                        // Show success feedback
+                        button.html('<i class="fas fa-check"></i> Added');
+                        setTimeout(function() {
+                            button.html('Add to Cart');
+                            button.prop('disabled', false);
+                        }, 1500);
+                    } else {
+                        // Show error message if not logged in
+                        if (response.redirectUrl) {
+                            window.location.href = response.redirectUrl;
                         } else {
-                            // Show error message if not logged in
-                            if (response.redirectUrl) {
-                                window.location.href = response.redirectUrl;
-                            } else {
-                                alert(response.message || 'Failed to add to cart');
-                                button.html('Add to Cart');
-                                button.prop('disabled', false);
-                            }
+                            alert(response.message || 'Failed to add to cart');
+                            button.html('Add to Cart');
+                            button.prop('disabled', false);
                         }
-                    },
-                    error: function() {
-                        alert('An error occurred while adding to cart');
-                        button.html('Add to Cart');
-                        button.prop('disabled', false);
                     }
-                });
+                },
+                error: function() {
+                    alert('An error occurred while adding to cart');
+                    button.html('Add to Cart');
+                    button.prop('disabled', false);
+                }
             });
-
-            // Quick View functionality
-            $('.quick-view').click(function(e) {
-                e.preventDefault();
-                const productId = $(this).data('product-id');
-                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
-
-                // Load product details via AJAX
-                $.ajax({
-                    url: '/Home/ProductQuickView',
-                    type: 'GET',
-                    data: { id: productId },
-                    beforeSend: function() {
-                        $('#quickViewContent').html(`
-                            <div class="text-center py-5">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                            </div>
-                        `);
-                    },
-                    success: function(response) {
-                        $('#quickViewContent').html(response);
-                        modal.show();
-
-                        // Initialize quantity controls in the modal
-                        $('.quantity-minus').click(function() {
-                            var input = $(this).parent().find('input');
-                            var value = parseInt(input.val());
-                            if (value > 1) {
-                                input.val(value - 1);
-                            }
-                        });
-
-                        $('.quantity-plus').click(function() {
-                            var input = $(this).parent().find('input');
-                            var value = parseInt(input.val());
-                            if (value < 10) {
-                                input.val(value + 1);
-                            }
-                        });
-
-                        // Handle add to cart in modal
-                        $('#modalAddToCart').click(function() {
-                            const qty = $('#quickViewQuantity').val();
-                            $.ajax({
-                                url: '/Carts/AddToCart',
-                                type: 'POST',
-                                data: {
-                                    ProId: productId,
-                                    qty: qty
-                                },
-                                success: function(response) {
-                                    if (response.success) {
-                                        // Update cart count
-                                        var currentCount = parseInt($('#cartSummary').text()) || 0;
-                                        $('#cartSummary').text(currentCount + parseInt(qty));
-
-                                        // Close modal
-                                        modal.hide();
-
-                                        // Show toast notification
-                                        showToast('Product added to cart!');
-                                    } else {
-                                        if (response.redirectUrl) {
-                                            window.location.href = response.redirectUrl;
-                                        } else {
-                                            alert(response.message || 'Failed to add to cart');
-                                        }
-                                    }
-                                },
-                                error: function() {
-                                    alert('An error occurred while adding to cart');
-                                }
-                            });
-                        });
-                    },
-                    error: function() {
-                        $('#quickViewContent').html(`
-                            <div class="alert alert-danger">
-                                Failed to load product details. Please try again.
-                            </div>
-                        `);
-                        modal.show();
-                    }
-                });
-            });
-
-            // Helper function to show toast notifications
-            function showToast(message) {
-                const toast = document.createElement('div');
-                toast.className = 'position-fixed bottom-0 end-0 p-3';
-                toast.style.zIndex = '11';
-                toast.innerHTML = `
-                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div class="toast-header">
-                            <strong class="me-auto">Notification</strong>
-                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                        </div>
-                        <div class="toast-body">
-                            ${message}
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(toast);
-
-                // Remove toast after 3 seconds
-                setTimeout(() => {
-                    toast.remove();
-                }, 3000);
-            }
         });
-    </script>
+
+        // Quick View functionality
+        $('.quick-view').click(function(e) {
+            e.preventDefault();
+            const productId = $(this).data('product-id');
+            const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+
+            // Load product details via AJAX
+            $.ajax({
+                url: '/Home/ProductQuickView',
+                type: 'GET',
+                data: { id: productId },
+                beforeSend: function() {
+                    $('#quickViewContent').html(`
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    `);
+                },
+                success: function(response) {
+                    $('#quickViewContent').html(response);
+                    modal.show();
+
+                    // Initialize quantity controls in the modal
+                    $('.quantity-minus').click(function() {
+                        var input = $(this).parent().find('input');
+                        var value = parseInt(input.val());
+                        if (value > 1) {
+                            input.val(value - 1);
+                        }
+                    });
+
+                    $('.quantity-plus').click(function() {
+                        var input = $(this).parent().find('input');
+                        var value = parseInt(input.val());
+                        if (value < 10) {
+                            input.val(value + 1);
+                        }
+                    });
+
+                    // Handle add to cart in modal
+                    $('#modalAddToCart').click(function() {
+                        const qty = $('#quickViewQuantity').val();
+                        $.ajax({
+                            url: '/Carts/AddToCart',
+                            type: 'POST',
+                            data: {
+                                ProId: productId,
+                                qty: qty
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    // Update cart count
+                                    var currentCount = parseInt($('#cartSummary').text()) || 0;
+                                    $('#cartSummary').text(currentCount + parseInt(qty));
+
+                                    // Close modal
+                                    modal.hide();
+
+                                    // Show toast notification
+                                    showToast('Product added to cart!');
+                                } else {
+                                    if (response.redirectUrl) {
+                                        window.location.href = response.redirectUrl;
+                                    } else {
+                                        alert(response.message || 'Failed to add to cart');
+                                    }
+                                }
+                            },
+                            error: function() {
+                                alert('An error occurred while adding to cart');
+                            }
+                        });
+                    });
+                },
+                error: function() {
+                    $('#quickViewContent').html(`
+                        <div class="alert alert-danger">
+                            Failed to load product details. Please try again.
+                        </div>
+                    `);
+                    modal.show();
+                }
+            });
+        });
+
+        // Helper function to show toast notifications
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'position-fixed bottom-0 end-0 p-3';
+            toast.style.zIndex = '11';
+            toast.innerHTML = `
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="me-auto">Notification</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    });
+</script>
 }

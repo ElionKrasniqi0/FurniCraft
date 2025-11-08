@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Configuration;
+using System.Net;
+using System.Net.Mail;
 
 namespace FurniCraft.Areas.Admin.Controllers
 {
@@ -251,6 +255,105 @@ namespace FurniCraft.Areas.Admin.Controllers
         {
             var message = _context.Contacts.ToList();
             return View(message);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteMessage(int id)
+        {
+            var message = await _context.Contacts.FindAsync(id);
+            if (message == null)
+            {
+                return Json(new { success = false, message = "Message not found." });
+            }
+
+            _context.Contacts.Remove(message);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Message deleted successfully." });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendReply(int id, string replySubject, string replyMessage)
+        {
+            try
+            {
+                var contactMessage = await _context.Contacts.FindAsync(id);
+                if (contactMessage == null)
+                {
+                    return Json(new { success = false, message = "Message not found." });
+                }
+
+                // Send email reply
+                var emailSent = await SendEmailReply(contactMessage.Email, replySubject, replyMessage);
+
+                if (emailSent)
+                {
+                    return Json(new { success = true, message = "Reply sent successfully to " + contactMessage.Email });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Failed to send email. Please check your email configuration." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error: {ex.Message}" });
+            }
+        }
+
+        private async Task<bool> SendEmailReply(string toEmail, string subject, string messageBody)
+        {
+            try
+            {
+                // Get configuration from the HttpContext
+                var configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+                var emailSettings = configuration.GetSection("EmailSettings");
+
+                var fromEmail = emailSettings["SenderEmail"];
+                var fromPassword = emailSettings["SenderPassword"];
+                var smtpHost = emailSettings["SmtpServer"];
+                var smtpPort = emailSettings["SmtpPort"];
+                var senderName = emailSettings["SenderName"];
+
+                if (string.IsNullOrEmpty(fromEmail) || string.IsNullOrEmpty(fromPassword))
+                {
+                    throw new Exception("Email configuration is missing. Please check appsettings.json.");
+                }
+
+                if (!int.TryParse(smtpPort, out int port))
+                {
+                    port = 587;
+                }
+
+                var message = new MailMessage
+                {
+                    From = new MailAddress(fromEmail, senderName),
+                    Subject = subject,
+                    Body = messageBody,
+                    IsBodyHtml = false
+                };
+
+                message.To.Add(toEmail);
+
+                using (var smtpClient = new SmtpClient(smtpHost, port))
+                {
+                    smtpClient.Credentials = new NetworkCredential(fromEmail, fromPassword);
+                    smtpClient.EnableSsl = true;
+                    smtpClient.Timeout = 30000;
+
+                    await smtpClient.SendMailAsync(message);
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Email sending failed: {ex.Message}");
+                throw;
+            }
         }
     }
 }

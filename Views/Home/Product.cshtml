@@ -1,5 +1,4 @@
 ﻿@model List<Product>
-
 <!-- Hero Section -->
 <div class="hero">
     <div class="container">
@@ -141,132 +140,132 @@
         </nav>
     </div>
 
-<!-- Quick View Modal -->
-<div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Product Quick View</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="quickViewContent">
-                <!-- Content will be loaded via AJAX -->
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+    <!-- Quick View Modal -->
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Product Quick View</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="quickViewContent">
+                    <!-- Content will be loaded via AJAX -->
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Add to Cart Toast Notification -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="addToCartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">Notification</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-            Product added to cart!
+    <!-- Add to Cart Toast Notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="addToCartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Product added to cart!
+            </div>
         </div>
     </div>
-</div>
 
-<style>
-    /* Product Card Styles */
-    .product-card {
-        transition: all 0.3s ease;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    <style>
+        /* Product Card Styles */
+        .product-card {
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-    /* Product Image */
-    .product-image {
-        height: 200px;
-        background-color: #f9f9f9;
-    }
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
 
-        .product-image img {
-            height: 100%;
-            width: 100%;
-            object-fit: contain;
-            padding: 20px;
+        /* Product Image */
+        .product-image {
+            height: 200px;
+            background-color: #f9f9f9;
+        }
+
+            .product-image img {
+                height: 100%;
+                width: 100%;
+                object-fit: contain;
+                padding: 20px;
+                transition: all 0.3s ease;
+            }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        /* Product Actions */
+        .product-actions {
+            bottom: -100%;
             transition: all 0.3s ease;
         }
 
-    .product-card:hover .product-image img {
-        transform: scale(1.05);
-    }
-
-    /* Product Actions */
-    .product-actions {
-        bottom: -100%;
-        transition: all 0.3s ease;
-    }
-
-    .product-card:hover .product-actions {
-        bottom: 15px;
-    }
-
-    /* Product Badges */
-    .product-badges {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 2;
-    }
-
-        .product-badges .badge {
-            margin-right: 5px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            padding: 4px 8px;
+        .product-card:hover .product-actions {
+            bottom: 15px;
         }
 
-    /* Product Title */
-    .product-title {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        height: 2.8rem;
-    }
-
-        .product-title a {
-            color: #333;
-            text-decoration: none;
+        /* Product Badges */
+        .product-badges {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
         }
 
-            .product-title a:hover {
-                color: #3b5d50;
+            .product-badges .badge {
+                margin-right: 5px;
+                font-size: 0.7rem;
+                font-weight: 500;
+                padding: 4px 8px;
             }
 
-    /* Product Price */
-    .current-price {
-        color: #3b5d50;
-        font-size: 1.1rem;
-    }
+        /* Product Title */
+        .product-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 2.8rem;
+        }
 
-    .original-price {
-        font-size: 0.8rem;
-    }
+            .product-title a {
+                color: #333;
+                text-decoration: none;
+            }
 
-    /* Product Rating */
-    .product-rating .stars {
-        color: #ffc107;
-    }
+                .product-title a:hover {
+                    color: #3b5d50;
+                }
 
-   
+        /* Product Price */
+        .current-price {
+            color: #3b5d50;
+            font-size: 1.1rem;
+        }
+
+        .original-price {
+            font-size: 0.8rem;
+        }
+
+        /* Product Rating */
+        .product-rating .stars {
+            color: #ffc107;
+        }
+
+
         /* Pagination */
         .page-item.active .page-link {
             background-color: #3b5d50;
@@ -292,173 +291,173 @@
                 font-size: 1rem;
             }
         }
-</style>
+    </style>
 
-<script>
-    $(document).ready(function() {
-        // Add to Cart functionality
-        $('.add-to-cart').click(function(e) {
-            e.preventDefault();
-            const productId = $(this).data('product-id');
-            const button = $(this);
+    <script>
+        $(document).ready(function() {
+            // Add to Cart functionality
+            $('.add-to-cart').click(function(e) {
+                e.preventDefault();
+                const productId = $(this).data('product-id');
+                const button = $(this);
 
-            // Show loading state
-            button.html('<span class="spinner-border spinner-border-sm"></span>');
-            button.prop('disabled', true);
+                // Show loading state
+                button.html('<span class="spinner-border spinner-border-sm"></span>');
+                button.prop('disabled', true);
 
-            $.ajax({
-                url: '/Carts/AddToCart',
-                type: 'POST',
-                data: {
-                    ProId: productId,
-                    qty: 1
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Update cart count in navbar
-                        var currentCount = parseInt($('#cartSummary').text()) || 0;
-                        $('#cartSummary').text(currentCount + 1);
+                $.ajax({
+                    url: '/Carts/AddToCart',
+                    type: 'POST',
+                    data: {
+                        ProId: productId,
+                        qty: 1
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update cart count in navbar
+                            var currentCount = parseInt($('#cartSummary').text()) || 0;
+                            $('#cartSummary').text(currentCount + 1);
 
-                        // Show toast notification
-                        var toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
-                        toast.show();
+                            // Show toast notification
+                            var toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
+                            toast.show();
 
-                        // Show success feedback
-                        button.html('<i class="fas fa-check"></i> Added');
-                        setTimeout(function() {
-                            button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
-                            button.prop('disabled', false);
-                        }, 1500);
-                    } else {
-                        if (response.redirectUrl) {
-                            window.location.href = response.redirectUrl;
+                            // Show success feedback
+                            button.html('<i class="fas fa-check"></i> Added');
+                            setTimeout(function() {
+                                button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
+                                button.prop('disabled', false);
+                            }, 1500);
                         } else {
-                            alert(response.message || 'Failed to add to cart');
-                            button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
-                            button.prop('disabled', false);
+                            if (response.redirectUrl) {
+                                window.location.href = response.redirectUrl;
+                            } else {
+                                alert(response.message || 'Failed to add to cart');
+                                button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
+                                button.prop('disabled', false);
+                            }
                         }
+                    },
+                    error: function() {
+                        alert('An error occurred while adding to cart');
+                        button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
+                        button.prop('disabled', false);
                     }
-                },
-                error: function() {
-                    alert('An error occurred while adding to cart');
-                    button.html('<i class="fas fa-shopping-cart me-1"></i> Add to Cart');
-                    button.prop('disabled', false);
-                }
+                });
             });
-        });
 
-        // Quick View functionality
-        $('.quick-view').click(function(e) {
-            e.preventDefault();
-            const productId = $(this).data('product-id');
-            const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+            // Quick View functionality
+            $('.quick-view').click(function(e) {
+                e.preventDefault();
+                const productId = $(this).data('product-id');
+                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
 
-            // Load product details via AJAX
-            $.ajax({
-                url: '/Home/ProductQuickView',
-                type: 'GET',
-                data: { id: productId },
-                beforeSend: function() {
-                    $('#quickViewContent').html(`
-                        <div class="text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                // Load product details via AJAX
+                $.ajax({
+                    url: '/Home/ProductQuickView',
+                    type: 'GET',
+                    data: { id: productId },
+                    beforeSend: function() {
+                        $('#quickViewContent').html(`
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
                             </div>
-                        </div>
-                    `);
-                },
-                success: function(response) {
-                    $('#quickViewContent').html(response);
-                    modal.show();
+                        `);
+                    },
+                    success: function(response) {
+                        $('#quickViewContent').html(response);
+                        modal.show();
 
-                    // Initialize quantity controls in the modal
-                    $('.quantity-minus').click(function() {
-                        var input = $(this).parent().find('input');
-                        var value = parseInt(input.val());
-                        if (value > 1) {
-                            input.val(value - 1);
-                        }
-                    });
-
-                    $('.quantity-plus').click(function() {
-                        var input = $(this).parent().find('input');
-                        var value = parseInt(input.val());
-                        if (value < 10) {
-                            input.val(value + 1);
-                        }
-                    });
-
-                    // Handle add to cart in modal
-                    $('#modalAddToCart').click(function() {
-                        const qty = $('#quickViewQuantity').val();
-                        const button = $(this);
-                        const originalText = button.html();
-
-                        button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
-
-                        $.ajax({
-                            url: '/Carts/AddToCart',
-                            type: 'POST',
-                            data: {
-                                ProId: productId,
-                                qty: qty
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    // Update cart count
-                                    var currentCount = parseInt($('#cartSummary').text()) || 0;
-                                    $('#cartSummary').text(currentCount + parseInt(qty));
-
-                                    // Close modal
-                                    modal.hide();
-
-                                    // Show toast notification
-                                    var toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
-                                    toast.show();
-                                } else {
-                                    if (response.redirectUrl) {
-                                        window.location.href = response.redirectUrl;
-                                    } else {
-                                        alert(response.message || 'Failed to add to cart');
-                                    }
-                                }
-                            },
-                            error: function() {
-                                alert('An error occurred while adding to cart');
+                        // Initialize quantity controls in the modal
+                        $('.quantity-minus').click(function() {
+                            var input = $(this).parent().find('input');
+                            var value = parseInt(input.val());
+                            if (value > 1) {
+                                input.val(value - 1);
                             }
                         });
+
+                        $('.quantity-plus').click(function() {
+                            var input = $(this).parent().find('input');
+                            var value = parseInt(input.val());
+                            if (value < 10) {
+                                input.val(value + 1);
+                            }
+                        });
+
+                        // Handle add to cart in modal
+                        $('#modalAddToCart').click(function() {
+                            const qty = $('#quickViewQuantity').val();
+                            const button = $(this);
+                            const originalText = button.html();
+
+                            button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+                            $.ajax({
+                                url: '/Carts/AddToCart',
+                                type: 'POST',
+                                data: {
+                                    ProId: productId,
+                                    qty: qty
+                                },
+                                success: function(response) {
+                                    if (response.success) {
+                                        // Update cart count
+                                        var currentCount = parseInt($('#cartSummary').text()) || 0;
+                                        $('#cartSummary').text(currentCount + parseInt(qty));
+
+                                        // Close modal
+                                        modal.hide();
+
+                                        // Show toast notification
+                                        var toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
+                                        toast.show();
+                                    } else {
+                                        if (response.redirectUrl) {
+                                            window.location.href = response.redirectUrl;
+                                        } else {
+                                            alert(response.message || 'Failed to add to cart');
+                                        }
+                                    }
+                                },
+                                error: function() {
+                                    alert('An error occurred while adding to cart');
+                                }
+                            });
+                        });
+                    },
+                    error: function() {
+                        $('#quickViewContent').html(`
+                            <div class="alert alert-danger">
+                                Failed to load product details. Please try again.
+                            </div>
+                        `);
+                        modal.show();
+                    }
+                });
+            });
+
+            // Category filter functionality
+            $('select').on('change', function() {
+                var categoryId = $(this).val();
+                if (categoryId === "All Categories") {
+                    $('.product-card').parent().show();
+                } else {
+                    $('.product-card').each(function() {
+                        // You would need to add data-category-id attribute to each product card
+                        // and filter based on that in a real implementation
+                        $(this).closest('.col-12').toggle($(this).find('.product-category').text().includes(categoryId));
                     });
-                },
-                error: function() {
-                    $('#quickViewContent').html(`
-                        <div class="alert alert-danger">
-                            Failed to load product details. Please try again.
-                        </div>
-                    `);
-                    modal.show();
                 }
             });
-        });
 
-        // Category filter functionality
-        $('select').on('change', function() {
-            var categoryId = $(this).val();
-            if (categoryId === "All Categories") {
-                $('.product-card').parent().show();
-            } else {
-                $('.product-card').each(function() {
-                    // You would need to add data-category-id attribute to each product card
-                    // and filter based on that in a real implementation
-                    $(this).closest('.col-12').toggle($(this).find('.product-category').text().includes(categoryId));
-                });
-            }
+            // Sort functionality
+            $('select').on('change', function() {
+                var sortValue = $(this).val();
+                // Implement sorting logic here based on the selected value
+                console.log('Sort by:', sortValue);
+            });
         });
-
-        // Sort functionality
-        $('select').on('change', function() {
-            var sortValue = $(this).val();
-            // Implement sorting logic here based on the selected value
-            console.log('Sort by:', sortValue);
-        });
-    });
-</script>
+    </script>

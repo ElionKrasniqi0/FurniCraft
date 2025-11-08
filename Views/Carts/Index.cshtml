@@ -5,7 +5,8 @@
         <div class="row justify-content-between">
             <div class="col-lg-5">
                 <div class="intro-excerpt">
-                    <h1>Cart</h1>
+                    <h1>Shopping Cart</h1>
+                    <p class="mb-4">Review your items and proceed to checkout</p>
                 </div>
             </div>
             <div class="col-lg-7">
@@ -14,7 +15,6 @@
         </div>
     </div>
 </div>
-<!-- End Hero Section -->
 
 <div class="untree_co-section before-footer-section">
     <div class="container">
@@ -22,101 +22,256 @@
             <div class="col-md-12">
                 @if (Model.IsEmpty)
                 {
-                    <div class="alert alert-info" role="alert">
-                        Your cart is empty. <a href="/Home/Product">Continue shopping</a> to add products.
+                    <div class="empty-cart-state text-center py-5">
+                        <div class="empty-cart-icon mb-4">
+                            <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+                        </div>
+                        <h3 class="text-muted mb-3">Your cart is empty</h3>
+                        <p class="text-muted mb-4">Discover our amazing products and add some items to your cart.</p>
+                        <a href="/Home/Product" class="btn btn-primary btn-lg">
+                            <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+                        </a>
                     </div>
                 }
                 else
                 {
-                    <div class="site-blocks-table">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Name</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cart-items">
-                                @foreach (var item in Model.Carts)
-                                {
-                                    <tr id="cart-item-@item.CartId" class="cart-item-row">
-                                        <td class="align-middle">
-                                            <img src="~/Product/@item.Product.ProImage" style="width: 100px; height: auto;" />
-                                        </td>
-                                        <td class="align-middle">@item.Product.ProName</td>
-                                        <td class="align-middle">€@item.Product.Price</td>
-                                        <td class="align-middle">@item.Qty</td>
-                                        <td class="align-middle">€@(item.Product.Price * item.Qty)</td>
-                                        <td class="align-middle">
-                                            <button class="btn btn-danger remove-item btn-sm"
-                                                    data-cart-id="@item.CartId">
-                                                Remove
-                                            </button>
-                                        </td>
+                    <form id="cartUpdateForm" method="post" action="/Carts/UpdateCartQuantities">
+                        <div class="site-blocks-table">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail">Product</th>
+                                        <th class="product-name">Name</th>
+                                        <th class="product-price">Price</th>
+                                        <th class="product-quantity">Quantity</th>
+                                        <th class="product-total">Total</th>
+                                        <th class="product-remove">Action</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody id="cart-items">
+                                    @foreach (var item in Model.Carts)
+                                    {
+                                        <tr id="cart-item-@item.CartId" class="cart-item-row">
+                                            <td class="product-thumbnail align-middle">
+                                                <div class="product-image-container">
+                                                    <img src="~/Product/@item.Product.ProImage" alt="@item.Product.ProName"
+                                                         class="img-fluid rounded shadow-sm" />
+                                                </div>
+                                            </td>
+                                            <td class="product-name align-middle">
+                                                <h6 class="mb-1 fw-semibold">@item.Product.ProName</h6>
+                                                <small class="text-muted">@item.Product.Category?.CatName</small>
+                                            </td>
+                                            <td class="product-price align-middle">
+                                                <span class="fw-bold text-primary">€@item.Product.Price.ToString("N2")</span>
+                                            </td>
+                                            <td class="product-quantity align-middle">
+                                                <div class="quantity-controls d-flex align-items-center justify-content-center">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn"
+                                                            data-action="decrease" data-cart-id="@item.CartId">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                    <input type="hidden" name="cartItems[@item.CartId].CartId" value="@item.CartId" />
+                                                    <input type="number" name="cartItems[@item.CartId].Quantity"
+                                                           class="form-control d-none quantity-input"
+                                                           value="@item.Qty" min="1" max="100" data-cart-id="@item.CartId" />
+                                                    <span class="quantity-display mx-3 fw-semibold" data-cart-id="@item.CartId">@item.Qty</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary quantity-btn"
+                                                            data-action="increase" data-cart-id="@item.CartId">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td class="product-total align-middle">
+                                                <span class="fw-bold text-dark item-total" data-item-price="@item.Product.Price"
+                                                      data-cart-id="@item.CartId">
+                                                    €@((item.Product.Price * item.Qty).ToString("N2"))
+                                                </span>
+                                            </td>
+                                            <td class="product-remove align-middle">
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-item"
+                                                        data-cart-id="@item.CartId"
+                                                        title="Remove item">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
                 }
             </div>
         </div>
+
         @if (!Model.IsEmpty)
         {
             <div class="row">
-                <div class="col-md-6">
-                    <div class="row mb-5">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <button class="btn btn-black btn-sm btn-block">Update Cart</button>
-                        </div>
-                        <div class="col-md-6">
-                            <button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
+                <!-- Cart Actions & Coupon Section -->
+                <div class="col-lg-6">
+                    <div class="cart-actions-card card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <!-- Continue Shopping & Update Cart -->
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <a href="/Home/Product" class="btn btn-outline-primary w-100">
+                                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <button type="submit" form="cartUpdateForm" class="btn btn-primary w-100" id="updateCartBtn">
+                                        <i class="fas fa-sync-alt me-2"></i>Update Cart
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Coupon Section -->
+                            <div class="coupon-section">
+                                <h5 class="mb-3 text-dark">
+                                    <i class="fas fa-tag text-primary me-2"></i>Apply Coupon Code
+                                </h5>
+                                <p class="text-muted mb-3">Enter your coupon code if you have one.</p>
+                                <div class="row g-2">
+                                    <div class="col-8">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control form-control-lg"
+                                                   id="couponCode" placeholder="Enter coupon code">
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-primary btn-lg w-100" id="applyCouponBtn">
+                                            Apply
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="couponMessage" class="mt-2 small"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label class="text-black h4" for="coupon">Coupon</label>
-                            <p>Enter your coupon code if you have one.</p>
-                        </div>
-                        <div class="col-md-8 mb-3 mb-md-0">
-                            <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
-                        </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-black">Apply Coupon</button>
+
+                    <!-- Shipping Information -->
+                    <div class="shipping-info-card card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">
+                                <i class="fas fa-shipping-fast text-primary me-2"></i>Shipping Information
+                            </h5>
+                            <div class="shipping-details">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Standard Shipping</span>
+                                    <span class="text-success fw-semibold">FREE</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Delivery Time</span>
+                                    <span class="text-dark">3-5 business days</span>
+                                </div>
+                                <div class="alert alert-info mt-3 mb-0">
+                                    <small>
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Free shipping on all orders over €50. Additional charges may apply for express delivery.
+                                    </small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 pl-5">
-                    <div class="row justify-content-end">
-                        <div class="col-md-7">
-                            <div class="row">
-                                <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <span class="text-black">Subtotal</span>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <strong class="text-black">€@Model.TotalAmount</strong>
-                            </div>
-                        </div>
-                        <div class="row mb-5">
-                            <div class="col-md-6">
-                                <span class="text-black">Total</span>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <strong class="text-black">€@Model.TotalAmount</strong>
-                            </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <a asp-action="Checkout" class="btn btn-black btn-lg py-3 btn-block">Proceed To Checkout</a>
+                <!-- Order Summary Section -->
+                <div class="col-lg-6">
+                    <div class="order-summary-card card border-0 shadow-sm sticky-top">
+                        <div class="card-header bg-transparent border-bottom-0 py-4">
+                            <h3 class="card-title mb-0 text-dark">
+                                <i class="fas fa-receipt text-primary me-2"></i>Order Summary
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Order Breakdown -->
+                            <div class="order-breakdown mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted">Subtotal</span>
+                                    <span class="fw-semibold" id="cartSubtotal">€@Model.TotalAmount.ToString("N2")</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted">Shipping</span>
+                                    <span class="text-success fw-semibold">FREE</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted">Tax</span>
+                                    <span class="fw-semibold">€0.00</span>
+                                </div>
+
+                                <!-- Coupon Discount (Hidden by default) -->
+                                <div class="d-flex justify-content-between align-items-center mb-3 d-none" id="couponDiscountRow">
+                                    <span class="text-muted">Coupon Discount</span>
+                                    <span class="text-success fw-semibold" id="couponDiscountAmount">-€0.00</span>
+                                </div>
+
+                                <hr class="my-3">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <span class="h5 mb-0 text-dark">Total</span>
+                                    <span class="h4 mb-0 text-primary fw-bold" id="orderTotalAmount">
+                                        €@Model.TotalAmount.ToString("N2")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Security Badges -->
+                            <div class="security-badges text-center mb-4">
+                                <div class="row g-2">
+                                    <div class="col-4">
+                                        <div class="border rounded p-2">
+                                            <i class="fas fa-lock text-success mb-1"></i>
+                                            <small class="d-block">Secure</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="border rounded p-2">
+                                            <i class="fas fa-shield-alt text-primary mb-1"></i>
+                                            <small class="d-block">Protected</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="border rounded p-2">
+                                            <i class="fas fa-credit-card text-info mb-1"></i>
+                                            <small class="d-block">SSL</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Checkout Button -->
+                            <div class="checkout-action">
+                                <a asp-action="Checkout" class="btn btn-primary btn-lg w-100 py-3 mb-3">
+                                    <i class="fas fa-lock me-2"></i>Proceed to Secure Checkout
+                                </a>
+                                <div class="text-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-lock me-1"></i>
+                                        Your payment information is secure and encrypted
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Trust Indicators -->
+                            <div class="trust-indicators mt-4 pt-3 border-top">
+                                <div class="row text-center g-3">
+                                    <div class="col-6">
+                                        <i class="fas fa-truck text-muted d-block mb-1"></i>
+                                        <small class="text-muted">Free Shipping</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <i class="fas fa-undo-alt text-muted d-block mb-1"></i>
+                                        <small class="text-muted">Easy Returns</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <i class="fas fa-award text-muted d-block mb-1"></i>
+                                        <small class="text-muted">Quality Guarantee</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <i class="fas fa-headset text-muted d-block mb-1"></i>
+                                        <small class="text-muted">24/7 Support</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -125,24 +280,166 @@
         }
     </div>
 </div>
+
+<style>
+    /* Enhanced Cart Styles */
+    .empty-cart-state {
+        background: #f8f9fa;
+        border-radius: 15px;
+        margin: 2rem 0;
+    }
+
+    .empty-cart-icon {
+        opacity: 0.5;
+    }
+
+    .cart-actions-card, .shipping-info-card, .order-summary-card {
+        border-radius: 15px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .cart-actions-card:hover, .shipping-info-card:hover, .order-summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+        }
+
+        .order-summary-card.sticky-top {
+            top: 20px;
+        }
+
+    .product-image-container {
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 5px;
+    }
+
+        .product-image-container img {
+            max-height: 70px;
+            object-fit: contain;
+        }
+
+    .quantity-controls {
+        max-width: 120px;
+    }
+
+    .quantity-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50% !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .quantity-display {
+        min-width: 30px;
+        text-align: center;
+    }
+
+    .coupon-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+    .security-badges .border {
+        border-color: #e9ecef !important;
+        transition: all 0.2s ease;
+    }
+
+        .security-badges .border:hover {
+            border-color: #3b5d50 !important;
+            background: #f8f9fa;
+        }
+
+    .trust-indicators i {
+        font-size: 1.2rem;
+    }
+
+    /* Table enhancements */
+    .site-blocks-table {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .table thead th {
+        background: #3b5d50;
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        letter-spacing: 0.5px;
+    }
+
+    .table tbody td {
+        border-color: #f1f3f4;
+        padding: 1.25rem 1rem;
+        vertical-align: middle;
+    }
+
+    .cart-item-row {
+        transition: all 0.3s ease;
+    }
+
+        .cart-item-row:hover {
+            background-color: #f8f9fa;
+        }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .cart-actions-card .row > div {
+            margin-bottom: 1rem;
+        }
+
+            .cart-actions-card .row > div:last-child {
+                margin-bottom: 0;
+            }
+
+        .order-summary-card.sticky-top {
+            position: relative !important;
+            top: 0 !important;
+        }
+
+        .product-image-container {
+            width: 60px;
+            height: 60px;
+        }
+
+            .product-image-container img {
+                max-height: 50px;
+            }
+    }
+
+    /* Animation for cart items */
+    .cart-item-row {
+        transition: all 0.3s ease;
+    }
+
+    .removing {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+</style>
+
 @section Scripts {
-    <style>
-        .cart-item-row {
-            transition: all 0.3s ease;
-        }
-
-        .removing {
-            opacity: 0;
-            height: 0;
-            padding: 0;
-            margin: 0;
-            border: none;
-            overflow: hidden;
-        }
-    </style>
-
     <script>
         $(document).ready(function() {
+            // Store original quantities for comparison
+            const originalQuantities = {};
+            $('.quantity-input').each(function() {
+                const cartId = $(this).data('cart-id');
+                originalQuantities[cartId] = parseInt($(this).val());
+            });
+
             // Remove item from cart
             $(document).on('click', '.remove-item', function(e) {
                 e.preventDefault();
@@ -150,11 +447,8 @@
                 const button = $(this);
                 const row = $(`#cart-item-${cartId}`);
 
-                // Disable all remove buttons during operation
                 $('.remove-item').prop('disabled', true);
                 button.html('<span class="spinner-border spinner-border-sm"></span>');
-
-                // Add removing class to start transition
                 row.addClass('removing');
 
                 $.ajax({
@@ -162,43 +456,171 @@
                     type: 'POST',
                     data: { cartId: cartId },
                     success: function(response) {
-                        // Wait for CSS transition to complete before removing
                         setTimeout(function() {
                             row.remove();
-
-                            // Update totals if needed
-                            if (response.newTotal !== undefined) {
-                                $('#cart-subtotal').text('€' + response.newTotal.toFixed(2));
-                                $('#cart-total').text('€' + response.newTotal.toFixed(2));
-                            }
-
-                            // Update cart count in navbar
-                            if (response.itemCount !== undefined) {
-                                $('#cartSummary').text(response.itemCount);
-                            }
+                            updateCartSummary(response);
+                            $('.remove-item').prop('disabled', false);
 
                             // Check if cart is empty
                             if ($('#cart-items tr').length === 0) {
-                                $('.site-blocks-table').replaceWith(
-                                    '<div class="alert alert-info" role="alert">' +
-                                    'Your cart is empty. <a href="/Home/Product">Continue shopping</a> to add products.' +
-                                    '</div>'
-                                );
-                                $('.row:has(#cart-items)').next().remove();
+                                location.reload();
                             }
-
-                            // Re-enable buttons
-                            $('.remove-item').prop('disabled', false);
-                        }, 300); // Match this with CSS transition duration
+                        }, 300);
                     },
                     error: function() {
                         alert('Error removing item from cart');
                         row.removeClass('removing');
-                        button.html('Remove');
+                        button.html('<i class="fas fa-trash"></i>');
                         $('.remove-item').prop('disabled', false);
                     }
                 });
             });
+
+            // Quantity controls - Only visual updates
+            $(document).on('click', '.quantity-btn', function() {
+                const action = $(this).data('action');
+                const cartId = $(this).data('cart-id');
+                const quantityDisplay = $(`.quantity-display[data-cart-id="${cartId}"]`);
+                const quantityInput = $(`.quantity-input[data-cart-id="${cartId}"]`);
+                let currentQty = parseInt(quantityDisplay.text());
+
+                if (action === 'increase') {
+                    currentQty += 1;
+                } else if (action === 'decrease' && currentQty > 1) {
+                    currentQty -= 1;
+                } else {
+                    return; // Don't go below 1
+                }
+
+                // Update display and hidden input
+                quantityDisplay.text(currentQty);
+                quantityInput.val(currentQty);
+
+                // Update item total
+                updateItemTotal(cartId, currentQty);
+
+                // Update cart summary
+                updateCartTotals();
+
+                // Show visual feedback
+                showQuantityFeedback(quantityDisplay.closest('.quantity-controls'));
+            });
+
+            // Function to update individual item total
+            function updateItemTotal(cartId, quantity) {
+                const itemTotalElement = $(`.item-total[data-cart-id="${cartId}"]`);
+                const itemPrice = parseFloat(itemTotalElement.data('item-price'));
+                const newTotal = (itemPrice * quantity).toFixed(2);
+                itemTotalElement.text('€' + newTotal);
+            }
+
+            // Function to update cart totals
+            function updateCartTotals() {
+                let subtotal = 0;
+
+                $('.item-total').each(function() {
+                    const totalText = $(this).text().replace('€', '');
+                    subtotal += parseFloat(totalText);
+                });
+
+                // Update displayed totals
+                $('#cartSubtotal').text('€' + subtotal.toFixed(2));
+                $('#orderTotalAmount').text('€' + subtotal.toFixed(2));
+
+                // Update coupon discount if applied
+                if (!$('#couponDiscountRow').hasClass('d-none')) {
+                    const discount = (subtotal * 0.1).toFixed(2);
+                    $('#couponDiscountAmount').text('-€' + discount);
+                    $('#orderTotalAmount').text('€' + (subtotal - discount).toFixed(2));
+                }
+            }
+
+            // Function to show quantity feedback
+            function showQuantityFeedback(quantityControls) {
+                const feedbackElement = quantityControls.find('.quantity-feedback');
+
+                if (feedbackElement.length === 0) {
+                    quantityControls.append('<div class="quantity-feedback position-absolute mt-1 w-100 text-center"></div>');
+                }
+
+                const newFeedbackElement = quantityControls.find('.quantity-feedback');
+                newFeedbackElement.removeClass('text-success text-danger').addClass('text-success');
+                newFeedbackElement.html('<small><i class="fas fa-check"></i> Updated</small>');
+
+                setTimeout(() => {
+                    newFeedbackElement.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                }, 1500);
+            }
+
+            // Update cart button - Now submits the form
+            $('#updateCartBtn').click(function(e) {
+                e.preventDefault();
+                const button = $(this);
+                const originalText = button.html();
+
+                button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Updating...');
+
+                // Submit the form
+                $('#cartUpdateForm').submit();
+            });
+
+            // Form submission handler
+            $('#cartUpdateForm').on('submit', function(e) {
+                // You can add any validation here before submission
+                console.log('Updating cart quantities...');
+                // The form will naturally submit to the server
+            });
+
+            // Apply coupon
+            $('#applyCouponBtn').click(function() {
+                const couponCode = $('#couponCode').val();
+                const messageDiv = $('#couponMessage');
+
+                if (!couponCode) {
+                    messageDiv.html('<span class="text-danger">Please enter a coupon code</span>');
+                    return;
+                }
+
+                const button = $(this);
+                const originalText = button.html();
+
+                button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+                messageDiv.html('');
+
+                // Simulate coupon validation
+                setTimeout(function() {
+                    if (couponCode.toUpperCase() === 'SAVE10') {
+                        messageDiv.html('<span class="text-success">Coupon applied! 10% discount added.</span>');
+                        $('#couponDiscountRow').removeClass('d-none');
+                        const subtotal = parseFloat($('#cartSubtotal').text().replace('€', ''));
+                        const discount = (subtotal * 0.1).toFixed(2);
+                        $('#couponDiscountAmount').text('-€' + discount);
+                        $('#orderTotalAmount').text('€' + (subtotal - discount).toFixed(2));
+                    } else {
+                        messageDiv.html('<span class="text-danger">Invalid coupon code. Please try again.</span>');
+                    }
+                    button.html(originalText).prop('disabled', false);
+                }, 1500);
+            });
+
+            function updateCartSummary(response) {
+                if (response.newTotal !== undefined) {
+                    $('#cartSubtotal').text('€' + response.newTotal.toFixed(2));
+                    $('#orderTotalAmount').text('€' + response.newTotal.toFixed(2));
+                }
+
+                if (response.itemCount !== undefined) {
+                    $('#cartSummary').text(response.itemCount);
+                }
+            }
+
+            // Add hover effects
+            $('.btn').hover(
+                function() { $(this).css('transform', 'translateY(-1px)'); },
+                function() { $(this).css('transform', 'translateY(0)'); }
+            );
         });
     </script>
 }

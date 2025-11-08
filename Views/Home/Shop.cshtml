@@ -1,5 +1,4 @@
 ﻿@model ShopViewModel
-
 <!-- Hero Section -->
 <div class="hero">
     <div class="container">
@@ -20,14 +19,14 @@
     <!-- Search and Filter Bar -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card1  border-0">
+            <div class="card shadow-sm border-0">
                 <div class="card-body p-3">
                     <div class="row g-3 align-items-center">
                         <div class="col-md-6">
                             <div class="input-group">
                                 <input type="text" class="form-control form-control-lg border-end-0"
                                        placeholder="Search for furniture..." id="searchInput">
-                                <button class="btn btn-outline-secondary border-start-0" type="button" id="searchButton">
+                                <button class="btn btn-outline-secondary border-start-0 " type="button">
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
@@ -52,7 +51,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- Categories Section -->
     <section id="categories" class="mb-5">
@@ -87,69 +85,122 @@
             <h2 class="h4 fw-bold mb-0">Featured Furniture</h2>
             <div class="d-flex gap-2">
                 <a href="/Home/Product" class="btn btn-sm btn-outline-primary">View All</a>
-                <div class="dropdown">
-                    <button class="btn btn-sm btn.btn-primary  dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Sort by: Featured
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary grid-view active">
+                        <i class="fas fa-th"></i>
                     </button>
-                    <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-                        <li><a class="dropdown-item" href="?sortOrder=featured">Featured</a></li>
-                        <li><a class="dropdown-item" href="?sortOrder=price_asc">Price: Low to High</a></li>
-                        <li><a class="dropdown-item" href="?sortOrder=price_desc">Price: High to Low</a></li>
-                        <li><a class="dropdown-item" href="?sortOrder=newest">Newest Arrivals</a></li>
-                    </ul>
+                    <button type="button" class="btn btn-sm btn-outline-secondary list-view">
+                        <i class="fas fa-list"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-3" id="productGrid">
             @foreach (var item in Model.Products)
             {
-                <div class="col-xl-3 col-lg-4 col-md-6 col-6">
+                <div class="col-6 col-md-4 col-lg-3">
                     <div class="card product-card h-100 border-0 shadow-sm">
-                        <!-- Product Badges -->
-                        <div class="product-badges">
-                            @if (item.Price > 500)
-                            {
-                                <span class="badge bg-danger">Premium</span>
-                            }
-                            <span class="badge bg-success">In Stock</span>
+                        <div class="badge bg-danger position-absolute top-0 start-0 m-2">Sale</div>
+                        <div class="wishlist-btn position-absolute top-0 end-0 m-2">
+                            <button class="btn btn-sm btn-light rounded-circle shadow-sm p-1">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
-
-                        <!-- Product Image -->
-                        <div class="product-image position-relative overflow-hidden">
-                            <a href="/Home/ProductDetailes/@item.ProId">
-                                <img src="~/Product/@item.ProImage" class="card-img-top" alt="@item.ProName" loading="lazy">
-                            </a>
-                            <div class="product-actions position-absolute w-100 px-3">
-                                <button class="btn btn-dark btn-sm w-100 mb-2 add-to-cart" data-product-id="@item.ProId">Add to Cart</button>
-                                <button class="btn btn-outline-dark btn-sm w-100 quick-view" data-product-id="@item.ProId">Quick View</button>
-                            </div>
-                        </div>
-
-                        <!-- Product Body -->
-                        <div class="card-body pt-3 pb-2 px-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h3 class="h6 mb-1">
-                                        <a href="/Home/ProductDetailes/@item.ProId" class="text-dark text-decoration-none">@item.ProName</a>
-                                    </h3>
-                                    <div class="text-muted small mb-2">@item.Category?.CatName</div>
+                        <a href="/Home/ProductDetailes/@item.ProId" class="product-image-link">
+                            <img src="~/Product/@item.ProImage" alt="@item.ProName"
+                                 class="card-img-top p-3" style="height: 200px; object-fit: contain;">
+                        </a>
+                        <div class="card-body p-3">
+                            <div class="d-flex flex-column h-100">
+                                <div class="mb-2">
+                                    <a href="/Home/ProductDetailes/@item.ProId" class="text-decoration-none text-dark">
+                                        <h6 class="card-title mb-1 fw-bold">@item.ProName</h6>
+                                    </a>
+                                    <p class="small text-muted mb-2">@item.Category?.CatName</p>
+                                </div>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="fw-bold text-primary">€@item.Price.ToString("N2")</span>
+                                            @if (item.Price > 200)
+                                            {
+                                                <span class="text-muted text-decoration-line-through small ms-1">
+                                                    €@((item.Price * 1.2m).ToString("N2"))
+                                                </span>
+                                            }
+                                        </div>
+                                        <form class="add-to-cart-form" method="post" action="/Carts/AddToCart">
+                                            <input type="hidden" name="ProId" value="@item.ProId" />
+                                            <input type="hidden" name="qty" value="1" />
+                                            <button type="submit" class="btn btn-sm btn-outline-primary rounded-circle p-1">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="price">
-                                    <strong class="text-dark">€@item.Price.ToString("N2")</strong>
-                                    @if (item.Price > 200)
-                                    {
-                                        <del class="text-muted small ms-1">€@((item.Price * 1.2m).ToString("N2"))</del>
-                                    }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Product List View (hidden by default) -->
+        <div class="row d-none" id="productList">
+            @foreach (var item in Model.Products)
+            {
+                <div class="col-12 mb-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                <a href="/Home/ProductDetailes/@item.ProId" class="product-image-link">
+                                    <img src="~/Product/@item.ProImage" alt="@item.ProName"
+                                         class="img-fluid rounded-start" style="height: 200px; object-fit: cover;">
+                                </a>
+                            </div>
+                            <div class="col-md-7">
+                                <div class="card-body">
+                                    <a href="/Home/ProductDetailes/@item.ProId" class="text-decoration-none text-dark">
+                                        <h5 class="card-title fw-bold">@item.ProName</h5>
+                                    </a>
+                                    <p class="small text-muted mb-2">@item.Category?.CatName</p>
+                                    <p class="card-text">@item.Descreption</p>
+                                    <div class="d-flex align-items-center">
+                                        <div class="rating me-2 small text-warning">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                        <span class="small text-muted">(24 reviews)</span>
+                                    </div>
                                 </div>
-                                <div class="rating small text-warning">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card-body h-100 d-flex flex-column justify-content-between">
+                                    <div class="text-end">
+                                        <div class="fw-bold text-primary fs-4 mb-2">€@item.Price.ToString("N2")</div>
+                                        @if (item.Price > 200)
+                                        {
+                                            <div class="text-muted text-decoration-line-through small">
+                                                €@((item.Price * 1.2m).ToString("N2"))
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <form class="add-to-cart-form" method="post" action="/Carts/AddToCart">
+                                            <input type="hidden" name="ProId" value="@item.ProId" />
+                                            <input type="hidden" name="qty" value="1" />
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="fas fa-shopping-cart me-1"></i> Add to Cart
+                                            </button>
+                                        </form>
+                                        <button class="btn btn-outline-secondary">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +210,7 @@
         </div>
 
         <!-- Pagination -->
-        <nav class="mt-5">
+        <nav class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item disabled">
                     <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
@@ -176,41 +227,8 @@
                 </li>
             </ul>
         </nav>
+    </section>
 </div>
-
-
-    <!-- Quick View Modal -->
-    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Product Quick View</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="quickViewContent">
-                    <!-- Content will be loaded via AJAX -->
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add to Cart Toast Notification -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="addToCartToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto">Notification</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                Product added to cart!
-            </div>
-        </div>
-    </div>
 
 <!-- Filter Offcanvas -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="filterOffcanvas">
@@ -280,103 +298,46 @@
 </div>
 
 <!-- Styles -->
-    <style>
-        .card1 {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            word-wrap: break-word;
-            background-color: #fff;
-            background-clip: border-box;
-            border: 1px solid rgba(0, 0, 0, .125);
-            border-radius: .25rem;
+<style>
+
+
+    .product-card {
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-        .product-card {
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            overflow: hidden;
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
-            .product-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
 
-        .product-image {
-            height: 200px;
-            background-color: #fff;
-        }
+    .product-image-link {
+        display: block;
+        background-color: #f8f9fa;
+    }
 
-            .product-image img {
-                height: 100%;
-                width: 100%;
-                object-fit: contain;
-                padding: 20px;
-                transition: all 0.3s ease;
-            }
+    .object-fit-contain {
+        object-fit: contain;
+    }
 
-        .product-card:hover .product-image img {
-            transform: scale(1.05);
-        }
+    .object-fit-cover {
+        object-fit: cover;
+    }
 
-        .product-badges {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 2;
-        }
-
-            .product-badges .badge {
-                margin-right: 5px;
-                font-size: 0.7rem;
-                font-weight: 500;
-                padding: 4px 8px;
-            }
-
-        .product-actions {
-            bottom: -100%;
-            transition: all 0.3s ease;
-        }
-
-        .product-card:hover .product-actions {
-            bottom: 15px;
-        }
-
-        .rating {
-            color: #ffc107;
-        }
-        /* Add to your existing styles */
-        #searchInput:focus {
-            border-color: #3b5d50;
-            box-shadow: 0 0 0 0.25rem rgba(59, 93, 80, 0.25);
-        }
-
-        .search-highlight {
-            background-color: #fff;
-            font-weight: bold;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 2rem;
-            grid-column: 1 / -1;
-        }
-
-            .no-results i {
-                font-size: 3rem;
-                color:#fff;
-                margin-bottom: 1rem;
-            }
-
-        .card-body {
-            flex: 1 1 auto;
-            padding: 1rem 1rem;
-            background-color: #eff2f1;
-        }
-
-    /* Pagination */
     .page-item.active .page-link {
         background-color: #3b5d50;
         border-color: #3b5d50;
@@ -384,220 +345,101 @@
 
     .page-link {
         color: #3b5d50;
+        min-width: 38px;
+        text-align: center;
     }
 
-    /* Responsive Adjustments */
-    @@media (max-width: 767.98px) {
-        .product-image-container {
-            height: 160px;
-        }
-
-        .product-title {
-            font-size: 0.9rem;
-            height: 2.4rem;
-        }
-
-        .current-price {
-            font-size: 1rem;
-        }
+    .grid-view.active, .list-view.active {
+        background-color: #3b5d50;
+        color: white;
     }
 
-    </style>
+    .rating {
+        color: #ffc107;
+    }
+</style>
 
 <!-- Scripts -->
-    @section Scripts {
-        <script>
-            $(document).ready(function() {
-                // Add to Cart functionality
-                $('.add-to-cart').click(function(e) {
-                    e.preventDefault();
-                    const productId = $(this).data('product-id');
-                    const button = $(this);
-
-                    // Show loading state
-                    button.html('<span class="spinner-border spinner-border-sm"></span>');
-                    button.prop('disabled', true);
-
-                    $.ajax({
-                        url: '/Carts/AddToCart',
-                        type: 'POST',
-                        data: {
-                            ProId: productId,
-                            qty: 1
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                // Update cart count in navbar
-                                var currentCount = parseInt($('#cartSummary').text()) || 0;
-                                $('#cartSummary').text(currentCount + 1);
-
-                                // Show toast notification
-                                var toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
-                                toast.show();
-
-                                // Show success feedback
-                                button.html('<i class="fas fa-check"></i> Added');
-                                setTimeout(function() {
-                                    button.html('Add to Cart');
-                                    button.prop('disabled', false);
-                                }, 1500);
-                            } else {
-                                // Show error message if not logged in
-                                if (response.redirectUrl) {
-                                    window.location.href = response.redirectUrl;
-                                } else {
-                                    alert(response.message || 'Failed to add to cart');
-                                    button.html('Add to Cart');
-                                    button.prop('disabled', false);
-                                }
-                            }
-                        },
-                        error: function() {
-                            alert('An error occurred while adding to cart');
-                            button.html('Add to Cart');
-                            button.prop('disabled', false);
-                        }
-                    });
-                });
-
-                // Quick View functionality
-                $('.quick-view').click(function(e) {
-                    e.preventDefault();
-                    const productId = $(this).data('product-id');
-                    const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
-
-                    // Load product details via AJAX
-                    $.ajax({
-                        url: '/Home/ProductQuickView',
-                        type: 'GET',
-                        data: { id: productId },
-                        beforeSend: function() {
-                            $('#quickViewContent').html(`
-                                <div class="text-center py-5">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </div>
-                            `);
-                        },
-                        success: function(response) {
-                            $('#quickViewContent').html(response);
-                            modal.show();
-
-                            // Initialize quantity controls in the modal
-                            $('.quantity-minus').click(function() {
-                                var input = $(this).parent().find('input');
-                                var value = parseInt(input.val());
-                                if (value > 1) {
-                                    input.val(value - 1);
-                                }
-                            });
-
-                            $('.quantity-plus').click(function() {
-                                var input = $(this).parent().find('input');
-                                var value = parseInt(input.val());
-                                if (value < 10) {
-                                    input.val(value + 1);
-                                }
-                            });
-
-                            // Handle add to cart in modal
-                            $('#modalAddToCart').click(function() {
-                                const qty = $('#quickViewQuantity').val();
-                                const button = $(this);
-                                const originalText = button.html();
-
-                                button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
-
-                                $.ajax({
-                                    url: '/Carts/AddToCart',
-                                    type: 'POST',
-                                    data: {
-                                        ProId: productId,
-                                        qty: qty
-                                    },
-                                    success: function(response) {
-                                        if (response.success) {
-                                            // Update cart count
-                                            var currentCount = parseInt($('#cartSummary').text()) || 0;
-                                            $('#cartSummary').text(currentCount + parseInt(qty));
-
-                                            // Close modal
-                                            modal.hide();
-
-                                            // Show toast notification
-                                            var toast = new bootstrap.Toast(document.getElementById('addToCartToast'));
-                                            toast.show();
-                                        } else {
-                                            if (response.redirectUrl) {
-                                                window.location.href = response.redirectUrl;
-                                            } else {
-                                                alert(response.message || 'Failed to add to cart');
-                                            }
-                                        }
-                                    },
-                                    error: function() {
-                                        alert('An error occurred while adding to cart');
-                                    }
-                                });
-                            });
-                        },
-                        error: function() {
-                            $('#quickViewContent').html(`
-                                <div class="alert alert-danger">
-                                    Failed to load product details. Please try again.
-                                </div>
-                            `);
-                            modal.show();
-                        }
-                    });
-                });
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Toggle between grid and list view
+            $('.grid-view').click(function() {
+                $('#productGrid').removeClass('d-none');
+                $('#productList').addClass('d-none');
+                $('.grid-view').addClass('active');
+                $('.list-view').removeClass('active');
             });
 
-                  $(document).ready(function() {
-                // ... (keep your existing code)
+            $('.list-view').click(function() {
+                $('#productList').removeClass('d-none');
+                $('#productGrid').addClass('d-none');
+                $('.list-view').addClass('active');
+                $('.grid-view').removeClass('active');
+            });
 
-                // Search functionality
-                function performSearch() {
-                    var value = $('#searchInput').val().toLowerCase().trim();
-                    if (value.length === 0) {
-                        $('.product-card').parent().show();
-                        return;
-                    }
-
-                    $('.product-card').each(function() {
-                        var productText = $(this).text().toLowerCase();
-                        var productCard = $(this).closest('.col-xl-3, .col-lg-4, .col-md-6, .col-6'); // Match your column classes
-
-                        if (productText.indexOf(value) > -1) {
-                            productCard.show();
-                        } else {
-                            productCard.hide();
-                        }
-                    });
+            // Initialize price slider
+            $("#priceSlider").slider({
+                range: true,
+                min: 0,
+                max: 1000,
+                values: [0, 1000],
+                slide: function(event, ui) {
+                    $("#minPrice").val(ui.values[0]);
+                    $("#maxPrice").val(ui.values[1]);
                 }
-
-                // Search on button click
-                $('#searchButton').click(function() {
-                    performSearch();
-                });
-
-                // Search on Enter key press
-                $('#searchInput').keypress(function(e) {
-                    if (e.which === 13) { // Enter key
-                        performSearch();
-                    }
-                });
-
-                // Clear search when input is empty
-                $('#searchInput').on('input', function() {
-                    if ($(this).val().trim() === '') {
-                        performSearch(); // This will show all products
-                    }
-                });
-
-                // ... (rest of your existing JavaScript code)
             });
-            var productText = $(this).find('.card-title').text().toLowerCase();
-        </script>
-    }
+
+            // Add to cart functionality
+            $('.add-to-cart-form').on('submit', function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var button = form.find('button');
+                var originalText = button.html();
+
+                button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: form.serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            // Update cart count
+                            var currentCount = parseInt($('#cartSummary').text()) || 0;
+                            $('#cartSummary').text(currentCount + 1);
+
+                            // Show feedback
+                            button.html('<i class="fas fa-check"></i>');
+                            setTimeout(function() {
+                                button.html(originalText);
+                                button.prop('disabled', false);
+                            }, 1500);
+                        }
+                    },
+                    error: function() {
+                        alert('Error adding to cart');
+                        button.html(originalText);
+                        button.prop('disabled', false);
+                    }
+                });
+            });
+
+            // Search functionality
+            $('#searchInput').on('keyup', function() {
+                var value = $(this).val().toLowerCase();
+                $('.product-card').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            // Sort functionality
+            $('#sortSelect').change(function() {
+                var sortValue = $(this).val();
+                // Implement sorting logic here
+                console.log('Sort by:', sortValue);
+            });
+        });
+    </script>
+}
+

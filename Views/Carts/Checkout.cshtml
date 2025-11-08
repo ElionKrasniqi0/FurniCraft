@@ -1,9 +1,7 @@
 ﻿@model Order
-
 @{
     ViewData["Title"] = "Checkout";
 }
-
 <div class="hero">
     <div class="container">
         <div class="row justify-content-between">
@@ -86,7 +84,7 @@
                                                 <tr>
                                                     <td>@item.Product.ProName</td>
                                                     <td>@item.Qty</td>
-                                                    <td>€@(item.Product.Price * item.Qty)</td>
+                                                    <td>€@(item.Product.Price* item.Qty)</td>
                                                 </tr>
                                             }
                                         }

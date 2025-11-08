@@ -1,0 +1,19 @@
+﻿@model FurniCraft.Enum.OrderStatus
+
+@{
+    var (badgeClass, iconClass, displayText) = Model switch
+    {
+        FurniCraft.Enum.OrderStatus.Received => ("bg-primary", "fas fa-inbox", "Received"),
+        FurniCraft.Enum.OrderStatus.Verified => ("bg-info", "fas fa-check-circle", "Verified"),
+        FurniCraft.Enum.OrderStatus.Processing => ("bg-warning", "fas fa-cog", "Processing"),
+        FurniCraft.Enum.OrderStatus.Shipped => ("bg-secondary", "fas fa-shipping-fast", "Shipped"),
+        FurniCraft.Enum.OrderStatus.Completed => ("bg-success", "fas fa-check", "Completed"),
+        FurniCraft.Enum.OrderStatus.Cancelled => ("bg-danger", "fas fa-times", "Cancelled"),
+        _ => ("bg-primary", "fas fa-inbox", "Received")
+    };
+}
+
+<span class="badge @badgeClass">
+    <i class="@iconClass me-1"></i>@displayText
+</span>
+
