@@ -118,10 +118,10 @@ namespace FurniCraft.Areas.Admin.Controllers
                 .OrderByDescending(te => te.EventDate)
                 .ToListAsync();
 
-            return Json(trackingEvents);
+            return PartialView("_TrackingHistory", trackingEvents);
         }
 
-       
+
         [HttpPost]
         public async Task<IActionResult> UpdateStatus(int id, OrderStatus status, string trackingNumber = "", string adminNotes = "")
         {
@@ -130,7 +130,6 @@ namespace FurniCraft.Areas.Admin.Controllers
                 .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
-
             if (order == null)
             {
                 return Json(new { success = false, message = "Order not found." });
@@ -138,11 +137,9 @@ namespace FurniCraft.Areas.Admin.Controllers
 
             var oldStatus = order.Status;
             order.Status = status;
-
             // Handle null values
             order.TrackingNumber = trackingNumber ?? string.Empty;
             order.AdminNotes = adminNotes ?? string.Empty;
-
             // Update status dates
             var now = DateTime.Now;
             switch (status)
@@ -165,7 +162,6 @@ namespace FurniCraft.Areas.Admin.Controllers
             }
 
             await _context.SaveChangesAsync();
-
             // Add automated tracking event
             await AddAutomatedTrackingEvent(order.OrderId, oldStatus, status);
 
@@ -281,73 +277,69 @@ namespace FurniCraft.Areas.Admin.Controllers
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($@"
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-        .header {{ background: #3b5d50; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }}
-        .content {{ background: #f9f9f9; padding: 20px; }}
-        .status-update {{ background: white; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #3b5d50; }}
-        .order-details {{ background: white; padding: 15px; margin: 15px 0; border-radius: 5px; }}
-        .tracking-info {{ background: #e8f5e8; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #28a745; }}
-        .footer {{ text-align: center; margin-top: 20px; padding: 20px; background: #f1f1f1; border-radius: 0 0 5px 5px; }}
-        .status-badge {{ display: inline-block; padding: 5px 10px; border-radius: 15px; font-weight: bold; margin: 0 5px; }}
-        .status-new {{ background: #007bff; color: white; }}
-        .status-processing {{ background: #ffc107; color: black; }}
-        .status-shipped {{ background: #17a2b8; color: white; }}
-        .status-completed {{ background: #28a745; color: white; }}
-        .status-cancelled {{ background: #dc3545; color: white; }}
-    </style>
-</head>
-<body>
-    <div class='container'>
-        <div class='header'>
-            <h1>FurniCraft</h1>
-            <h2>Order Status Update</h2>
-        </div>
-        
-        <div class='content'>
-            <p>Dear {order.User?.UserName ?? "Valued Customer"},</p>
-            <p>We're writing to inform you about an update to your order status.</p>
-            
-            <div class='status-update'>
-                <h3>Status Change</h3>
-                <p>
-                    Your order status has been updated from 
-                    <span class='status-badge status-{oldStatus.ToString().ToLower()}'>@{oldStatus}</span> 
-                    to 
-                    <span class='status-badge status-{newStatus.ToString().ToLower()}'>@{newStatus}</span>
-                </p>
-            </div>
+            sb.AppendLine("<!DOCTYPE html>");
+            sb.AppendLine("<html>");
+            sb.AppendLine("<head>");
+            sb.AppendLine("<style>");
+            sb.AppendLine("body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }");
+            sb.AppendLine(".container { max-width: 600px; margin: 0 auto; padding: 20px; }");
+            sb.AppendLine(".header { background: #3b5d50; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }");
+            sb.AppendLine(".content { background: #f9f9f9; padding: 20px; }");
+            sb.AppendLine(".status-update { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #3b5d50; }");
+            sb.AppendLine(".order-details { background: white; padding: 15px; margin: 15px 0; border-radius: 5px; }");
+            sb.AppendLine(".tracking-info { background: #e8f5e8; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #28a745; }");
+            sb.AppendLine(".footer { text-align: center; margin-top: 20px; padding: 20px; background: #f1f1f1; border-radius: 0 0 5px 5px; }");
+            sb.AppendLine(".status-badge { display: inline-block; padding: 5px 10px; border-radius: 15px; font-weight: bold; margin: 0 5px; color: white; }");
+            sb.AppendLine(".status-received { background: #007bff; }");
+            sb.AppendLine(".status-verified { background: #17a2b8; }");
+            sb.AppendLine(".status-processing { background: #ffc107; color: black; }");
+            sb.AppendLine(".status-shipped { background: #6f42c1; }");
+            sb.AppendLine(".status-completed { background: #28a745; }");
+            sb.AppendLine(".status-cancelled { background: #dc3545; }");
+            sb.AppendLine("</style>");
+            sb.AppendLine("</head>");
+            sb.AppendLine("<body>");
+            sb.AppendLine("<div class='container'>");
+            sb.AppendLine("<div class='header'>");
+            sb.AppendLine("<h1>FurniCraft</h1>");
+            sb.AppendLine("<h2>Order Status Update</h2>");
+            sb.AppendLine("</div>");
 
-            <div class='order-details'>
-                <h3>Order Information</h3>
-                <p><strong>Order Number:</strong> #ORD{order.OrderId:D6}</p>
-                <p><strong>Order Date:</strong> {order.OrderDate.ToString("MMMM dd, yyyy")}</p>
-                <p><strong>Total Amount:</strong> €{order.TotalAmount:N2}</p>
-            </div>");
+            sb.AppendLine("<div class='content'>");
+            sb.AppendLine($"<p>Dear {order.User?.UserName ?? "Valued Customer"},</p>");
+            sb.AppendLine("<p>We're writing to inform you about an update to your order status.</p>");
+
+            sb.AppendLine("<div class='status-update'>");
+            sb.AppendLine("<h3>Status Change</h3>");
+            sb.AppendLine($"<p>Your order status has been updated from <span class='status-badge status-{oldStatus.ToString().ToLower()}'>{oldStatus}</span> to <span class='status-badge status-{newStatus.ToString().ToLower()}'>{newStatus}</span></p>");
+            sb.AppendLine("</div>");
+
+            sb.AppendLine("<div class='order-details'>");
+            sb.AppendLine("<h3>Order Information</h3>");
+            sb.AppendLine($"<p><strong>Order Number:</strong> #ORD{order.OrderId:D6}</p>");
+            sb.AppendLine($"<p><strong>Order Date:</strong> {order.OrderDate.ToString("MMMM dd, yyyy")}</p>");
+            sb.AppendLine($"<p><strong>Total Amount:</strong> €{order.TotalAmount:N2}</p>");
+            sb.AppendLine("</div>");
 
             // Add tracking information if available and status is shipped
             if (newStatus == OrderStatus.Shipped && !string.IsNullOrEmpty(order.TrackingNumber))
             {
-                sb.AppendLine($@"
-                <div class='tracking-info'>
-                    <h3>🚚 Shipping Information</h3>
-                    <p><strong>Tracking Number:</strong> {order.TrackingNumber}</p>
-                    <p>You can track your package using the tracking number above on our carrier's website.</p>
-                </div>");
+                sb.AppendLine("<div class='tracking-info'>");
+                sb.AppendLine("<h3>🚚 Shipping Information</h3>");
+                sb.AppendLine($"<p><strong>Tracking Number:</strong> {order.TrackingNumber}</p>");
+                sb.AppendLine("<p>You can track your package using the tracking number above on our carrier's website.</p>");
+                sb.AppendLine("</div>");
             }
 
             // Add status-specific messages
-            sb.AppendLine($@"
-            <div class='status-message'>
-                <h3>What this means:</h3>");
+            sb.AppendLine("<div class='status-message'>");
+            sb.AppendLine("<h3>What this means:</h3>");
 
             switch (newStatus)
             {
+                case OrderStatus.Received:
+                    sb.AppendLine("<p>Your order has been received and is being processed. We'll start processing it shortly.</p>");
+                    break;
                 case OrderStatus.Verified:
                     sb.AppendLine("<p>Your order has been verified and is now being processed. We'll prepare your items for shipment.</p>");
                     break;
@@ -364,12 +356,10 @@ namespace FurniCraft.Areas.Admin.Controllers
                     sb.AppendLine("<p>Your order has been cancelled. If this was unexpected or you have any questions, please contact our support team.</p>");
                     break;
             }
+            sb.AppendLine("</div>");
 
-            sb.AppendLine($@"
-            </div>
-
-            <div class='next-steps'>
-                <h3>Next Steps</h3>");
+            sb.AppendLine("<div class='next-steps'>");
+            sb.AppendLine("<h3>Next Steps</h3>");
 
             if (newStatus == OrderStatus.Shipped)
             {
@@ -381,25 +371,33 @@ namespace FurniCraft.Areas.Admin.Controllers
                 sb.AppendLine("<p>• Your order has been successfully delivered</p>");
                 sb.AppendLine("<p>• If you have any issues, contact our support team within 30 days</p>");
             }
+            else if (newStatus == OrderStatus.Cancelled)
+            {
+                sb.AppendLine("<p>• If you have questions about the cancellation, contact our support team</p>");
+                sb.AppendLine("<p>• Browse our collection for other products</p>");
+            }
+            else
+            {
+                sb.AppendLine("<p>• We'll notify you by email for any new status updates</p>");
+                sb.AppendLine("<p>• Please check your email regularly for updates</p>");
+            }
 
-            sb.AppendLine($@"
-                <p>• You can always check your order status by visiting your account dashboard</p>
-            </div>
+            sb.AppendLine("<p>• You can always check your order status by visiting your account dashboard</p>");
+            sb.AppendLine("</div>");
 
-            <p>If you have any questions about your order, please don't hesitate to contact our customer service team.</p>
-            
-            <p>Thank you for choosing FurniCraft!</p>
-        </div>
-        
-        <div class='footer'>
-            <p><strong>FurniCraft</strong></p>
-            <p>Rr Prshtina Re</p>
-            <p>Email: support@furnicraft.com | Phone: +383 (458) 04-555</p>
-            <p><a href='https://yourwebsite.com' style='color: #3b5d50;'>Visit our website</a></p>
-        </div>
-    </div>
-</body>
-</html>");
+            sb.AppendLine("<p>If you have any questions about your order, please don't hesitate to contact our customer service team.</p>");
+            sb.AppendLine("<p>Thank you for choosing FurniCraft!</p>");
+            sb.AppendLine("</div>");
+
+            sb.AppendLine("<div class='footer'>");
+            sb.AppendLine("<p><strong>FurniCraft</strong></p>");
+            sb.AppendLine("<p>Rr Prshtina Re</p>");
+            sb.AppendLine("<p>Email: support@furnicraft.com | Phone: +383 (458) 04-555</p>");
+            sb.AppendLine("<p><a href='https://yourwebsite.com' style='color: #3b5d50;'>Visit our website</a></p>");
+            sb.AppendLine("</div>");
+            sb.AppendLine("</div>");
+            sb.AppendLine("</body>");
+            sb.AppendLine("</html>");
 
             return sb.ToString();
         }
