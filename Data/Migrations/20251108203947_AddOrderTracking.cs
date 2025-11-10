@@ -90,7 +90,7 @@ namespace FurniCraft.Data.Migrations
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.CreateTable(
-                name: "TrackingEvent",
+                name: "TrackingEvents",
                 columns: table => new
                 {
                     TrackingEventId = table.Column<int>(type: "int", nullable: false)
@@ -104,9 +104,9 @@ namespace FurniCraft.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TrackingEvent", x => x.TrackingEventId);
+                    table.PrimaryKey("PK_TrackingEvents", x => x.TrackingEventId);
                     table.ForeignKey(
-                        name: "FK_TrackingEvent_Orders_OrderId",
+                        name: "FK_TrackingEvents_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
                         principalColumn: "OrderId",
@@ -114,8 +114,8 @@ namespace FurniCraft.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TrackingEvent_OrderId",
-                table: "TrackingEvent",
+                name: "IX_TrackingEvents_OrderId",
+                table: "TrackingEvents",
                 column: "OrderId");
         }
 
@@ -123,7 +123,7 @@ namespace FurniCraft.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TrackingEvent");
+                name: "TrackingEvents");
 
             migrationBuilder.DropColumn(
                 name: "AdminNotes",

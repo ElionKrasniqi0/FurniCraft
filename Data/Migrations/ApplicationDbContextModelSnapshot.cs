@@ -271,7 +271,7 @@ namespace FurniCraft.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("TrackingEvent");
+                    b.ToTable("TrackingEvents");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

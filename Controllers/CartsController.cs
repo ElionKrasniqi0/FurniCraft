@@ -1,5 +1,4 @@
-﻿
-using FurniCraft.Data;
+﻿using FurniCraft.Data;
 using FurniCraft.Enum;
 using FurniCraft.Models;
 using Microsoft.AspNetCore.Authorization;

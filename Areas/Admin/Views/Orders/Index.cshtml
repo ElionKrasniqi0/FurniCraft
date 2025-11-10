@@ -180,40 +180,71 @@
 </div>
 
 <!-- Update Status Modal -->
+<!-- Update Status Modal -->
 <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="statusModalLabel">Update Order Status</h5>
+                <h5 class="modal-title" id="statusModalLabel">Update Order Status & Tracking</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="statusForm">
                     <input type="hidden" id="orderId">
-                    <div class="mb-3">
-                        <label class="form-label">Status</label>
-                        <select class="form-select" id="orderStatus" required>
-                            @foreach (var status in statusList)
-                            {
-                                <option value="@status">@status</option>
-                            }
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="form-select" id="orderStatus" required onchange="toggleTrackingFields()">
+                                    <option value="Received">Received</option>
+                                    <option value="Verified">Verified</option>
+                                    <option value="Processing">Processing</option>
+                                    <option value="Shipped">Shipped</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Carrier</label>
+                                <select class="form-select" id="carrier">
+                                    <option value="Standard Shipping">Standard Shipping</option>
+                                    <option value="Express Shipping">Express Shipping</option>
+                                    <option value="DHL">DHL</option>
+                                    <option value="UPS">UPS</option>
+                                    <option value="FedEx">FedEx</option>
+                                    <option value="Custom">Custom Carrier</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3" id="trackingField" style="display: none;">
+
+                    <div class="mb-3" id="trackingFields" style="display: none;">
                         <label class="form-label">Tracking Number</label>
                         <input type="text" class="form-control" id="trackingNumber"
-                               placeholder="Enter tracking number">
+                               placeholder="Enter tracking number (will be sent to customer)">
+                        <div class="form-text">This tracking number will be included in the customer notification email.</div>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">Admin Notes</label>
+                        <label class="form-label">Admin Notes (Internal)</label>
                         <textarea class="form-control" id="adminNotes" rows="3"
-                                  placeholder="Add any notes about this order..."></textarea>
+                                  placeholder="Add internal notes about this order..."></textarea>
+                        <div class="form-text">These notes are for internal use only and won't be sent to the customer.</div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Email Notification:</strong> Customer will receive an automatic email with status update and tracking information.
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="updateOrderStatus()">Update Status</button>
+                <button type="button" class="btn btn-primary" onclick="updateOrderStatus()">
+                    <i class="fas fa-paper-plane me-2"></i>Update Status & Notify Customer
+                </button>
             </div>
         </div>
     </div>
@@ -272,6 +303,85 @@
 }
 
 @section Scripts {
+
+    <script>
+        function toggleTrackingFields() {
+            const status = document.getElementById('orderStatus').value;
+            const trackingFields = document.getElementById('trackingFields');
+
+            if (status === 'Shipped') {
+                trackingFields.style.display = 'block';
+            } else {
+                trackingFields.style.display = 'none';
+            }
+        }
+
+        function updateOrderStatus() {
+            const orderId = document.getElementById('orderId').value;
+            const status = document.getElementById('orderStatus').value;
+            const trackingNumber = document.getElementById('trackingNumber').value;
+            const adminNotes = document.getElementById('adminNotes').value;
+            const carrier = document.getElementById('carrier').value;
+
+            const updateButton = document.querySelector('#statusModal .btn-primary');
+            const originalText = updateButton.innerHTML;
+
+            // Show loading state
+            updateButton.disabled = true;
+            updateButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+
+            fetch('@Url.Action("UpdateStatus", "Orders", new { area = "Admin" })', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${orderId}&status=${status}&trackingNumber=${encodeURIComponent(trackingNumber)}&adminNotes=${encodeURIComponent(adminNotes)}&carrier=${encodeURIComponent(carrier)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Order status updated successfully! Email notification sent to customer.', 'success');
+
+                    // Close modal and refresh page after a short delay
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('statusModal')).hide();
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showNotification(data.message, 'error');
+                    updateButton.disabled = false;
+                    updateButton.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                showNotification('Error updating order status', 'error');
+                updateButton.disabled = false;
+                updateButton.innerHTML = originalText;
+            });
+        }
+
+        function showNotification(message, type) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0 position-fixed top-0 end-0 m-3`;
+            toast.style.zIndex = '1060';
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            // Remove toast after hiding
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+    </script>
     <script>
         function filterOrders() {
             const status = document.getElementById('statusFilter').value;

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FurniCraft.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251108194002_AddOrderTracking")]
+    [Migration("20251108203947_AddOrderTracking")]
     partial class AddOrderTracking
     {
         /// <inheritdoc />
@@ -274,7 +274,7 @@ namespace FurniCraft.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("TrackingEvent");
+                    b.ToTable("TrackingEvents");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
