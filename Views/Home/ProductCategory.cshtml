@@ -7,9 +7,13 @@
             <div class="col-lg-5">
                 <div class="intro-excerpt">
                     <h1>Shop Our Collection</h1>
+                    <p class="mb-4">Discover premium furniture pieces curated for your home</p>
                 </div>
             </div>
             <div class="col-lg-7">
+                <div class="hero-img-wrap">
+                    <img src="~/images/couch.png" class="img-fluid" alt="Furniture Collection">
+                </div>
             </div>
         </div>
     </div>
@@ -20,7 +24,7 @@
     <div class="container">
         <div class="row mb-4">
             <div class="col-md-6">
-                <p class="mb-0">Showing <strong>@Model.Count</strong> products</p>
+                <p class="mb-0">Showing <strong>@Model.Count</strong> product@(Model.Count != 1 ? "s" : "")</p>
             </div>
             <div class="col-md-6 text-md-end">
                 <div class="dropdown">
@@ -40,40 +44,79 @@
         <div class="row g-4">
             @foreach (var product in Model)
             {
-                <div class="col-xl-3 col-lg-4 col-md-6 col-6">
-                    <div class="card product-card h-100 border-0 shadow-sm">
-                        <div class="product-image position-relative overflow-hidden">
-                            <a href="/Home/ProductDetailes/@product.ProId">
-                                <img src="~/Product/@product.ProImage" class="card-img-top" alt="@product.ProName" loading="lazy">
-                            </a>
-                            <div class="product-actions position-absolute w-100 px-3">
-                                <button class="btn btn-dark btn-sm w-100 mb-2 add-to-cart" data-product-id="@product.ProId">Add to Cart</button>
-                                <button class="btn btn-outline-dark btn-sm w-100 quick-view" data-product-id="@product.ProId">Quick View</button>
-                            </div>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                    <div class="card product-card h-100 border-0 shadow-sm hover-lift">
+                        <!-- Product Badges -->
+                        <div class="product-badges position-absolute top-0 start-0 m-3">
+                            @if (product.Price > 500)
+                            {
+                                <span class="badge bg-danger">Premium</span>
+                            }
+                            <span class="badge bg-success">In Stock</span>
                         </div>
-                        <div class="card-body pt-3 pb-2 px-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h3 class="h6 mb-1">
-                                        <a href="/Home/ProductDetailes/@product.ProId" class="text-dark text-decoration-none">@product.ProName</a>
-                                    </h3>
-                                    <div class="text-muted small mb-2">@product.Category?.CatName</div>
-                                </div>
+
+                        <!-- Wishlist Button -->
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <button class="btn btn-light btn-sm rounded-circle shadow-sm wishlist-btn"
+                                    data-product-id="@product.ProId">
+                                <i class="far fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="product-image position-relative overflow-hidden">
+                            <a href="/Home/ProductDetailes/@product.ProId" class="d-block">
+                                <img src="~/Product/@product.ProImage"
+                                     class="card-img-top p-4"
+                                     alt="@product.ProName"
+                                     loading="lazy"
+                                     style="height: 250px; object-fit: contain;">
+                            </a>
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="card-body d-flex flex-column pt-3 pb-2 px-3">
+                            <div class="mb-2">
+                                <span class="badge bg-light text-dark small mb-2">@product.Category?.CatName</span>
+                                <h5 class="product-title mb-2">
+                                    <a href="/Home/ProductDetailes/@product.ProId"
+                                       class="text-dark text-decoration-none">
+                                        @product.ProName
+                                    </a>
+                                </h5>
+                                <p class="text-muted small mb-3 line-clamp-2">@product.Descreption</p>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div class="price">
-                                    <strong class="text-dark">€@product.Price</strong>
-                                    @if (product.Price > 0)
-                                    {
-                                        <del class="text-muted small ms-1">€@product.Price</del>
-                                    }
+
+                            <!-- Rating -->
+                            <div class="product-rating mb-3">
+                                <div class="stars text-warning small">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
                                 </div>
-                                <div class="rating small text-warning">
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-fill"></i>
-                                    <i class="bi bi-star-half"></i>
+                                <small class="text-muted">(24 reviews)</small>
+                            </div>
+
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="h5 mb-0 text-primary fw-bold">€@product.Price.ToString("N2")</span>
+                                        @if (product.Price > 500)
+                                        {
+                                            <small class="text-muted text-decoration-line-through d-block">
+                                                €@((product.Price * 1.2m).ToString("N2"))
+                                            </small>
+                                        }
+                                    </div>
+                                    <button class="btn btn-primary rounded-circle p-2 add-to-cart-btn"
+                                            data-product-id="@product.ProId"
+                                            data-product-name="@product.ProName"
+                                            data-product-price="@product.Price"
+                                            data-product-image="@product.ProImage">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -81,6 +124,23 @@
                 </div>
             }
         </div>
+
+        <!-- No Products Message -->
+        @if (!Model.Any())
+        {
+            <div class="row">
+                <div class="col-12 text-center py-5">
+                    <div class="empty-state-icon mb-4">
+                        <i class="fas fa-search fa-4x text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No Products Found</h4>
+                    <p class="text-muted mb-4">Try adjusting your filters or browse our categories</p>
+                    <a href="/Home/Product" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag me-2"></i>Browse All Products
+                    </a>
+                </div>
+            </div>
+        }
 
         <!-- Pagination -->
         @if (ViewBag.TotalPages > 1)
@@ -93,14 +153,16 @@
                             {
                                 <li class="page-item">
                                     <a class="page-link" href="?page=@(ViewBag.CurrentPage - 1)&sortOrder=@ViewBag.CurrentSort" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
+                                        <i class="fas fa-chevron-left"></i>
                                     </a>
                                 </li>
                             }
                             else
                             {
                                 <li class="page-item disabled">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&laquo;</a>
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
                                 </li>
                             }
 
@@ -115,14 +177,16 @@
                             {
                                 <li class="page-item">
                                     <a class="page-link" href="?page=@(ViewBag.CurrentPage + 1)&sortOrder=@ViewBag.CurrentSort" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
+                                        <i class="fas fa-chevron-right"></i>
                                     </a>
                                 </li>
                             }
                             else
                             {
                                 <li class="page-item disabled">
-                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">&raquo;</a>
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
                                 </li>
                             }
                         </ul>
@@ -133,233 +197,284 @@
     </div>
 </section>
 
-<!-- Quick View Modal -->
-<div class="modal fade" id="quickViewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Product Quick View</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body" id="quickViewContent">
-                <!-- Content will be loaded via AJAX -->
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-            </div>
+<!-- Toast Container -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            Product added to cart!
         </div>
     </div>
 </div>
-
+<br />
+<br/>
+<br />
 <style>
-    .product-card {
+    .hover-lift {
         transition: all 0.3s ease;
-        border-radius: 8px;
-        overflow: hidden;
     }
 
-        .product-card:hover {
+        .hover-lift:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
         }
 
     .product-image {
-        height: 200px;
-        background-color: #f9f9f9;
-    }
-
-        .product-image img {
-            height: 100%;
-            width: 100%;
-            object-fit: contain;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-
-    .product-card:hover .product-image img {
-        transform: scale(1.05);
-    }
-
-    .product-actions {
-        bottom: -100%;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         transition: all 0.3s ease;
     }
 
-    .product-card:hover .product-actions {
-        bottom: 15px;
+    .product-card:hover .product-image {
+        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
     }
 
-    .rating {
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-title {
+        font-weight: 600;
+        line-height: 1.3;
+    }
+
+    .stars {
         color: #ffc107;
     }
 
-    .footer-section {
-        padding: 130px 0;
+    .empty-state-icon {
+        opacity: 0.5;
+    }
+
+    .product-badges .badge {
+        font-size: 0.7rem;
+        font-weight: 500;
+        margin-right: 5px;
+    }
+
+    .wishlist-btn {
+        transition: all 0.3s ease;
+    }
+
+        .wishlist-btn:hover {
+            transform: scale(1.1);
+            background-color: #fff !important;
+        }
+
+        .wishlist-btn.active {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+        }
+
+    .add-to-cart-btn {
+        transition: all 0.3s ease;
+    }
+
+        .add-to-cart-btn:hover {
+            transform: scale(1.05);
+        }
+
+    /* Smooth animations */
+    .product-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2rem;
+        }
+
+        .product-card .card-body {
+            padding: 1rem;
+        }
     }
 </style>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Add to Cart functionality
-        $('.add-to-cart').click(function(e) {
+        $(document).on('click', '.add-to-cart-btn', function (e) {
             e.preventDefault();
-            const productId = $(this).data('product-id');
+            e.stopPropagation();
+
             const button = $(this);
+            const productId = button.data('product-id');
+            const productName = button.data('product-name');
+            const productPrice = parseFloat(button.data('product-price'));
+            const productImage = button.data('product-image');
 
-            // Show loading state
-            button.html('<span class="spinner-border spinner-border-sm"></span>');
-            button.prop('disabled', true);
-
-            $.ajax({
-                url: '/Carts/AddToCart',
-                type: 'POST',
-                data: {
-                    ProId: productId,
-                    qty: 1
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Update cart count in navbar
-                        var currentCount = parseInt($('#cartSummary').text()) || 0;
-                        $('#cartSummary').text(currentCount + 1);
-
-                        // Show success feedback
-                        button.html('<i class="fas fa-check"></i> Added');
-                        setTimeout(function() {
-                            button.html('Add to Cart');
-                            button.prop('disabled', false);
-                        }, 1500);
-                    } else {
-                        // Show error message if not logged in
-                        if (response.redirectUrl) {
-                            window.location.href = response.redirectUrl;
-                        } else {
-                            alert(response.message || 'Failed to add to cart');
-                            button.html('Add to Cart');
-                            button.prop('disabled', false);
-                        }
-                    }
-                },
-                error: function() {
-                    alert('An error occurred while adding to cart');
-                    button.html('Add to Cart');
-                    button.prop('disabled', false);
-                }
-            });
+            addToCart(button, productId, productName, productPrice, productImage);
         });
 
-        // Quick View functionality
-        $('.quick-view').click(function(e) {
+        // Wishlist functionality
+        $('.wishlist-btn').click(function (e) {
             e.preventDefault();
-            const productId = $(this).data('product-id');
-            const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+            e.stopPropagation();
 
-            // Load product details via AJAX
-            $.ajax({
-                url: '/Home/ProductQuickView',
-                type: 'GET',
-                data: { id: productId },
-                beforeSend: function() {
-                    $('#quickViewContent').html(`
-                        <div class="text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    `);
-                },
-                success: function(response) {
-                    $('#quickViewContent').html(response);
-                    modal.show();
+            const button = $(this);
+            const productId = button.data('product-id');
 
-                    // Initialize quantity controls in the modal
-                    $('.quantity-minus').click(function() {
-                        var input = $(this).parent().find('input');
-                        var value = parseInt(input.val());
-                        if (value > 1) {
-                            input.val(value - 1);
-                        }
-                    });
+            // Toggle wishlist state
+            button.toggleClass('active');
+            const icon = button.find('i');
 
-                    $('.quantity-plus').click(function() {
-                        var input = $(this).parent().find('input');
-                        var value = parseInt(input.val());
-                        if (value < 10) {
-                            input.val(value + 1);
-                        }
-                    });
+            if (button.hasClass('active')) {
+                icon.removeClass('far').addClass('fas');
+                showToast('Added to wishlist!');
+            } else {
+                icon.removeClass('fas').addClass('far');
+                showToast('Removed from wishlist');
+            }
 
-                    // Handle add to cart in modal
-                    $('#modalAddToCart').click(function() {
-                        const qty = $('#quickViewQuantity').val();
-                        $.ajax({
-                            url: '/Carts/AddToCart',
-                            type: 'POST',
-                            data: {
-                                ProId: productId,
-                                qty: qty
-                            },
-                            success: function(response) {
-                                if (response.success) {
-                                    // Update cart count
-                                    var currentCount = parseInt($('#cartSummary').text()) || 0;
-                                    $('#cartSummary').text(currentCount + parseInt(qty));
+            // Add bounce animation
+            icon.addClass('bounce');
+            setTimeout(() => icon.removeClass('bounce'), 300);
+        });
+    });
 
-                                    // Close modal
-                                    modal.hide();
+    function addToCart(button, productId, productName, productPrice, productImage) {
+        const originalContent = button.html();
+        const originalClass = button.attr('class');
 
-                                    // Show toast notification
-                                    showToast('Product added to cart!');
-                                } else {
-                                    if (response.redirectUrl) {
-                                        window.location.href = response.redirectUrl;
-                                    } else {
-                                        alert(response.message || 'Failed to add to cart');
-                                    }
-                                }
-                            },
-                            error: function() {
-                                alert('An error occurred while adding to cart');
-                            }
-                        });
-                    });
-                },
-                error: function() {
-                    $('#quickViewContent').html(`
-                        <div class="alert alert-danger">
-                            Failed to load product details. Please try again.
-                        </div>
-                    `);
-                    modal.show();
+        // Show loading state
+        button.prop('disabled', true)
+              .html('<span class="spinner-border spinner-border-sm"></span>')
+              .attr('class', 'btn btn-secondary rounded-circle p-2');
+
+        $.ajax({
+            url: '/Carts/AddToCart',
+            type: 'POST',
+            data: {
+                ProId: productId,
+                qty: 1
+            },
+            success: function (response) {
+                if (response.success) {
+                    // Update cart count in navbar
+                    updateCartCount(response.cartItemCount);
+
+                    // Show success state
+                    button.html('<i class="fas fa-check"></i>')
+                          .attr('class', 'btn btn-success rounded-circle p-2');
+
+                    // Show toast notification
+                    showToast(`${productName} added to cart!`);
+
+                    // Reset button after delay
+                    setTimeout(() => {
+                        button.html('<i class="fas fa-shopping-cart"></i>')
+                              .attr('class', originalClass)
+                              .prop('disabled', false);
+                    }, 2000);
+                } else {
+                    // Handle error or redirect to login
+                    if (response.redirectUrl) {
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        showToast(response.message || 'Failed to add item to cart', 'error');
+                        resetButton(button, originalContent, originalClass);
+                    }
                 }
-            });
+            },
+            error: function (xhr, status, error) {
+                console.error('Error adding to cart:', error);
+                showToast('Error adding item to cart. Please try again.', 'error');
+                resetButton(button, originalContent, originalClass);
+            }
+        });
+    }
+
+    function updateCartCount(count) {
+        // Update the cart count in the navbar
+        const cartSummary = $('#cartSummary');
+        if (cartSummary.length) {
+            cartSummary.text(count);
+        }
+
+        // If using a different cart element, update it too
+        const cartBadge = $('.cart-count-badge, .cart-item-count');
+        if (cartBadge.length) {
+            cartBadge.text(count);
+        }
+    }
+
+    function resetButton(button, originalContent, originalClass) {
+        button.html(originalContent)
+              .attr('class', originalClass)
+              .prop('disabled', false);
+    }
+
+    function showToast(message, type = 'success') {
+        // Remove any existing toasts
+        $('.toast').remove();
+
+        const toastId = 'toast-' + Date.now();
+        const toastHTML = `
+            <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header ${type === 'success' ? 'bg-success text-white' : 'bg-danger text-white'}">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+                    <strong class="me-auto">${type === 'success' ? 'Success' : 'Error'}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
+        `;
+
+        $('.position-fixed.bottom-0.end-0.p-3').append(toastHTML);
+
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement, {
+            autohide: true,
+            delay: 3000
         });
 
-        // Helper function to show toast notifications
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'position-fixed bottom-0 end-0 p-3';
-            toast.style.zIndex = '11';
-            toast.innerHTML = `
-                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="toast-header">
-                        <strong class="me-auto">Notification</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(toast);
+        toast.show();
 
-            // Remove toast after 3 seconds
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-    });
+        // Remove toast from DOM after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', function () {
+            this.remove();
+        });
+    }
+
+    // Alternative simpler toast function if Bootstrap toast is not working
+    function showSimpleToast(message, type = 'success') {
+        // Create a simple alert div
+        const alertId = 'alert-' + Date.now();
+        const alertHTML = `
+            <div id="${alertId}" class="alert ${type === 'success' ? 'alert-success' : 'alert-danger'} alert-dismissible fade show position-fixed top-0 end-0 m-3" style="z-index: 1060;">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        $('body').append(alertHTML);
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            $('#' + alertId).alert('close');
+        }, 3000);
+    }
 </script>
-}

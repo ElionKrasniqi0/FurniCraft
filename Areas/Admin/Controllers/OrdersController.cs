@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Net;
 using System.Net.Mail;
-using System.Text; // Add this using statement
+using System.Text; 
 
 namespace FurniCraft.Areas.Admin.Controllers
 {
